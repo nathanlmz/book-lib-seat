@@ -8,6 +8,7 @@
 <body>
     <header><h1 class="title">Book Lib Seat</h1></header>
     <?php
+    // This codes are just for printing out User's sid, but we don't want to do that by now.
         /*
         if(!isset($_GET['sid'])){
             exit();
@@ -22,9 +23,8 @@
         I want to
     </p>
     
-    <!--<button onclick="location.href='/bls/chooselib.php';">Book a seat</button>
-    <button onclick="location.href='/bls/viewbook.php';">View my bookings</button> -->
     <?php
+        // We include the codes of the buttons in php because we want to keep the sid
         $gsid = $_GET['sid'];
         echo '<form method="post">
                 <button name="bookseat">Book a seat</button>

@@ -8,6 +8,7 @@
 <body>
     <header><h1 class="title">Book Lib Seat</h1></header>
     <?php
+    // This codes are just for printing out User's sid, but we don't want to do that by now.
         /*
         if(!isset($_GET['sid'])){
             exit();
@@ -22,14 +23,8 @@
         Please choose a library
         <br>
     </p>
-    <!--<form method="post">
-        <button name="ulib">University Library</button>
-        <button name="nalib">New Asia College Library</button>
-        <button name="cclib">Chung Chi College Library</button>
-        <button name="uclib">United College Library</button>
-    </form> -->
-
     <?php
+    // We include the codes of the buttons in php because we want to keep the sid
         $gsid = $_GET['sid'];
         echo '<form method="post">
             <button name="ulib">University Library</button>
