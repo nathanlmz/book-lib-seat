@@ -12,8 +12,9 @@ form input{
     font-weight: bold;
     font-size: 16px;
     text-align: left;
-    
+    padding-left: 10px;
 }
+
 ::-ms-input-placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     /*color: purple;  */
     size: 16px;
@@ -26,7 +27,7 @@ form input{
 }
 form button{
     display: block;
-    width: 304px;
+    width: 314px;
     margin: auto;
     background-color: purple;
     color: #FFF;
