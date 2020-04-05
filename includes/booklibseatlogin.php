@@ -41,13 +41,13 @@ if (isset($_POST['login-submit'])) {
         $pwdCheck = password_verify($password, $row['pwd']);
         // If they don't match then we create an error message!
         //if ($pwdCheck == false) {
-        if ($password !== $row['pwd']){            //Here, the password in database is still not encripted, so we just compare the password from database and the one inputted by the user
+        if ($pwdCheck == false){            //Here, the password in database is still not encripted, so we just compare the password from database and the one inputted by the user
           // If there is an error we send the user back to the signup page.
           header("Location: ../index.php?error=wrongpwd");
           exit();
         }
         //else if ($pwdCheck == true) {
-          else if ($password == $row['pwd']){      //Here, the password in database is still not encripted, so we just compare the password from database and the one inputted by the user
+          else if ($pwdCheck == true){      //Here, the password in database is still not encripted, so we just compare the password from database and the one inputted by the user
 
           session_start();
           // Create the session variables.
