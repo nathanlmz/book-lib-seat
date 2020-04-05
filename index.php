@@ -15,14 +15,14 @@
             <?php
                 if(isset($_GET['sid'])){
                     $first = $_GET['sid'];
-                    echo '<input type="text" name="sid" placeholder=" Student/Staff ID" value="'.$first.'"><br>';
+                    echo '<input type="text" name="sid" placeholder="Student/Staff ID  eg. s1155xxxxxx" value="'.$first.'"><br>';
                 }
                 else{
-                    echo '<input type="text" name="sid" placeholder=" Student/Staff ID"><br>';
+                    echo '<input type="text" name="sid" placeholder="Student/Staff ID  eg. s1155xxxxxx"><br>';
                 }
             ?>
 
-            <input type="password" name="pwd" placeholder=" Password">
+            <input type="password" name="pwd" placeholder="Password">
             <br>
             <button type="submit" name="login-submit">Log in</button>
         </form>

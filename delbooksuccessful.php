@@ -1,3 +1,7 @@
+<?php
+    require 'includes/bls.dbh.php';
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,30 +11,25 @@
 
 <body>
     <header><h1 class="title">Book Lib Seat</h1></header>
-    <p class="chooselib">
-        I want to
+    <p align="center">
+        <font face="arial" color="green" size="6"><b>The Booking is CANCELLED!</b></font>
+        <br><br>
     </p>
-    
     <?php
-        // We include the codes of the buttons in php because we want to keep the sid
+    // We include the codes of the buttons in php because we want to keep the sid
         $gsid = $_GET['sid'];
         echo '<form method="post">
-                <button name="bookseat">Book a seat</button>
+                <button name="homepage">Return Homepage</button>
                 <button name="viewbook">View my bookings</button>
-                <button name="floorplan">View Library Floorplan</button>
-                <button name="delbook">Cancel a booking</button>
+                <button name="delbook">Cancel another booking</button>
                 <button name="logout">Log out</button>
             </form>';
-        if (isset($_POST['bookseat'])) {
-            header("Location: ../bls/lib/ulib.php?sid=".$gsid);
+        if (isset($_POST['homepage'])) {
+            header("Location: ../bls/home.php?sid=".$gsid);
             exit();
         }
         else if(isset($_POST['viewbook'])){
             header("Location: ../bls/viewbook.php?sid=".$gsid);
-            exit();
-        }
-        else if(isset($_POST['floorplan'])){
-            header("Location: ../bls/floorplan.php?sid=".$gsid);
             exit();
         }
         else if(isset($_POST['delbook'])){
@@ -42,7 +41,6 @@
             exit();
         }
     ?>
-
 </body>
 
 </html>
