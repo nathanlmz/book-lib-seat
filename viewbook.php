@@ -41,9 +41,10 @@
          }
          else {
              // output data of each row
-             echo '<table style="width:60%">
+             echo '<table style="width:65%">
              <tr>
                  <th>Library</th>
+                 <th>Floor</th>
                  <th>Area</th>
                  <th>Seat id</th>
                  <th>date</th>
@@ -52,6 +53,10 @@
              </tr>'; 
              while($row = mysqli_fetch_assoc($result)) {
                  // echo "<br> id: ". $row["id"]. " - Name: ". $row["firstname"]. " " . $row["lastname"] . "<br>";
+                $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$row['area']."'";
+                $getfloorresult = mysqli_query($conn, $getfloorsql);
+                $getfloorrow = mysqli_fetch_array($getfloorresult);
+                 
                  echo "<tr>";
                  $library=$row['lib'];
                  if($library=="ulib"){
@@ -60,7 +65,9 @@
                  else{
                     echo "<td>".$row['lib']."</td>";
                  }
-                 echo "<td>".$row['area']."</td>
+                 echo "
+                 <td>".$getfloorrow['floor']."/F</td>
+                 <td>".$row['area']."</td>
                  <td>".$row['seatid']."</td>
                  <td>".$row['bookdate']."</td>
                  <td>".$row['starttime']."</td>

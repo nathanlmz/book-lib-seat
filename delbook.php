@@ -64,7 +64,8 @@
                             // mysqli_stmt_bind_param($stmt, "sssssss", $usid, $date, $starttime, $endtime, $seat);
                             mysqli_stmt_execute($stmt);
                         }
-                        header("Location: ../bls/delbooksuccessful.php?sid=".$usid);
+                        //header("Location: ../bls/delbooksuccessful.php?sid=".$usid);
+                        header("Location: ../bls/delbook.php?sid=".$usid);
                         exit();
                     }
                     else if(!mysqli_num_rows($checkseatresult)){
@@ -144,10 +145,11 @@
          }
          else {
              // output data of each row
-             echo '<table style="width:60%">
+             echo '<table style="width:66%">
              <tr>
                  <th>Book ID</th>
                  <th>Library</th>
+                 <th>Floor</th>
                  <th>Area</th>
                  <th>Seat id</th>
                  <th>date</th>
@@ -155,7 +157,10 @@
                  <th>To</th>
              </tr>'; 
              while($row = mysqli_fetch_assoc($result)) {
-                 // echo "<br> id: ". $row["id"]. " - Name: ". $row["firstname"]. " " . $row["lastname"] . "<br>";
+                $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$row['area']."'";
+                $getfloorresult = mysqli_query($conn, $getfloorsql);
+                $getfloorrow = mysqli_fetch_array($getfloorresult);
+
                  echo "<tr>";
                  $library=$row['lib'];
                  echo "<td>".$row['bookid']."</td>";
@@ -165,7 +170,8 @@
                  else{
                     echo "<td>".$row['lib']."</td>";
                  }
-                 echo "<td>".$row['area']."</td>
+                 echo "<td>".$getfloorrow['floor']."/F</td>
+                 <td>".$row['area']."</td>
                  <td>".$row['seatid']."</td>
                  <td>".$row['bookdate']."</td>
                  <td>".$row['starttime']."</td>

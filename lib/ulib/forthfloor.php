@@ -1,4 +1,9 @@
 <?php
+    if(!isset($_GET['sid'])){
+        header("Location: http://localhost/bls/index.php");
+        exit();
+    }
+
     require 'bls.dbh.php';
 ?>
 

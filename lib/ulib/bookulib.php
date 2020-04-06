@@ -4,6 +4,7 @@
         $date = $_GET['date'];
         $starttime = $_GET['starttime'];
         $endtime = $_GET['endtime'];
+        $area = $_GET['area'];
     }
     if (isset($_POST['login-submit'])) {
 
@@ -21,8 +22,8 @@
         $area = $_GET['area'];
       
         // Check whether there exist empty input or not.
-        if (empty($usid) || empty($password)) {
-          header("Location: ../ulib/bookulib.php?error=emptyfields&sid=".$usid);
+        if (empty($usid) || empty($password)||empty($seat)||empty($date)||empty($starttime)||empty($endtime)||empty($area)) {
+          header("Location: ../ulib/bookulib.php?error=empty&area=".$area."&sid=".$usid);
           exit();
         }
         else {
@@ -61,22 +62,44 @@
                 else if ($pwdCheck == true){      //Here, the password in database is still not encripted, so we just compare the password from database and the one inputted by the user
                     $checkseatsql = "SELECT * FROM bookrecord WHERE seatid='".$seat."' AND lib='ulib' AND bookdate='".$date."' AND ((starttime<='".$starttime."' AND endtime>='".$starttime."') OR (starttime<='".$endtime."' AND endtime>='".$endtime."') OR (starttime>='".$starttime."' AND endtime<='".$endtime."'))";
                     $checkseatresult = mysqli_query($conn, $checkseatsql);
-
+                    date_default_timezone_set("Asia/Hong_Kong");
                     $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`='".$area."'";
                     $seatresult = mysqli_query($conn, $areaseatsql);
                     $seatrow = mysqli_fetch_array($seatresult);
                     $seatnum = (int) filter_var($seat, FILTER_SANITIZE_NUMBER_INT);
+                    $seatchar = substr($seat,0,1);
                     if($seatnum>$seatrow['seatnum']){
                         header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=3&submit=");
                     }
                     else if($seatnum<1){
                         header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=3&submit=");
                     }
+                    else if(strcmp($seatchar,$area)!=0){
+                        header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=4&submit=");
+                    }
+                    else if((substr($seat,1,1)>9)||(substr($seat,1,1)<1)){
+                        header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=4&submit=");
+                    }
                     else{
                         $multiseatsql = "SELECT * FROM bookrecord WHERE sid='".$usid."' AND bookdate='".$date."' AND ((starttime<='".$starttime."' AND endtime>='".$starttime."') OR (starttime<='".$endtime."' AND endtime>='".$endtime."') OR (starttime>='".$starttime."' AND endtime<='".$endtime."'))";
                         $multiseatresult = mysqli_query($conn, $multiseatsql);
-
-                        if((!mysqli_num_rows($checkseatresult))&&(!mysqli_num_rows($multiseatresult))) {
+                        if(mysqli_num_rows($checkseatresult)){
+                            header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=1&submit=");
+                        }
+                        else if(mysqli_num_rows($multiseatresult)){
+                            header("Location: ../ulib/bookulib.php?area=".$area."&error=2&sid=".$usid);
+                        }
+                        else if($date <  date("Y-m-d")){
+                            header("Location: ../ulib/bookulib.php?area=".$area."&error=date&sid=".$usid);
+                        }
+                        else if(($date == date("Y-m-d"))&&$starttime<date("H:i")){
+                            header("Location: ../ulib/bookulib.php?area=".$area."&error=time&sid=".$usid);
+                        }
+                        else if($starttime > $endtime){
+                            header("Location: ../ulib/bookulib.php?area=".$area."&error=time&sid=".$usid);
+                        }
+                        else {
+                        //if((!mysqli_num_rows($checkseatresult))&&(!mysqli_num_rows($multiseatresult))) {
                             session_start();
                             // Create the session variables.
                             $_SESSION['sid'] = $row['sid'];
@@ -87,6 +110,10 @@
                                 // mysqli_stmt_bind_param($stmt, "sssssss", $usid, $date, $starttime, $endtime, $seat);
                                 mysqli_stmt_execute($stmt);
                             }
+                            $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$area."'";
+                            $getfloorresult = mysqli_query($conn, $getfloorsql);
+                            $getfloorrow = mysqli_fetch_array($getfloorresult);
+
                             //Send email to user
                             $getmailsql = "SELECT `linkmail` FROM `accounts` WHERE `sid`='".$usid."'";
                             $getmailresult = mysqli_query($conn, $getmailsql);
@@ -122,7 +149,7 @@
                             <tr><th>Time</th>
                                 <td>From '.$starttime.' to '.$endtime.'</td></tr>
                             <tr><th>Area</th>
-                                <td>'.$area.'</td></tr>
+                                <td>'.$area.',  '.$getfloorrow['floor'].'/F</td></tr>
                             <tr><th>Seat id</th>
                                 <td>'.$seat.'</td></tr>
                             </table>
@@ -134,12 +161,7 @@
                             header("Location: ../ulib/successful.php?sid=".$usid);
                             exit();
                         }
-                        else if(mysqli_num_rows($checkseatresult)){
-                            header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=1&submit=");
-                        }
-                        else if(mysqli_num_rows($multiseatresult)){
-                            header("Location: ../ulib/bookulib.php?area=".$area."&error=2&sid=".$usid);
-                        }
+                        
                     }
               }
             }
@@ -223,6 +245,22 @@
                 else if($errortype == 3){
                     echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The seat id you inserted is invalid!</h1>
                     <h2 style="color:red;text-align:center;font-size:16px;font-family:arial;">Please select a valid seat</h2>';
+                }
+                else if($errortype == 4){
+                    echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The seat id you inserted is invalid!</h1>
+                    <h2 style="color:red;text-align:center;font-size:16px;font-family:arial;">Please select a valid seat</h2>';
+                }
+                else if($errortype == "date"){
+                    echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The date you selected is invalid!</h1>
+                    <h2 style="color:red;text-align:center;font-size:16px;font-family:arial;">Please choose a valid date</h2>';
+                }
+                else if($errortype == "time"){
+                    echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The time you selected is invalid!</h1>
+                    <h2 style="color:red;text-align:center;font-size:16px;font-family:arial;">Please choose a valid time</h2>';
+                }
+                else if($errortype == "empty"){
+                    echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">Please fill in all the fields!</h1>';
+                    //<h2 style="color:red;text-align:center;font-size:16px;font-family:arial;">Please choose a valid time</h2>';
                 }
             }
             if(isset($_GET['area'])){
@@ -336,14 +374,7 @@
                     exit();
                 }
             }
-            // echo '<form method="POST"><button name="return">Return to previous page</button></form>';
-            // if(isset($_POST['return'])){
-            //     header("Location: ../ulib.php?sid=".$gsid);
-            //     exit();
-            // }
         ?>
         
-
-
     </body>
 </html>

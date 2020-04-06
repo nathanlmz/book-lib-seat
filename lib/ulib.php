@@ -1,3 +1,10 @@
+<?php
+    if(!isset($_GET['sid'])){
+        header("Location: http://localhost/bls/index.php");
+        exit();
+    }
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
