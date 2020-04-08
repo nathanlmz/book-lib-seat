@@ -10,4 +10,5 @@ The course project for group 24 of CSCI3100 Software Engineering in CUHK.
 6. You can add new accounts to the login system, the admin password is "nathan".
 
 After importing bls.sql into the MySQL database, you can login Book Lib Seat with any of the following accountes:
+
 SID: s1155100000 (password: qwer123)
