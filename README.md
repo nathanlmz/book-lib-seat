@@ -9,8 +9,8 @@ The course project for group 24 of CSCI3100 Software Engineering in CUHK.
 5. If you want to use the database, go to localhost/phpmyadmin. You should import bls.sql to the database if you don't want to create a new bls databse. OTHERWISE, YOU CAN'T LOGIN AND ACCESS ANY BOOK ACTION IN THE WEBPAGES!!!
 6. You can add new accounts to the login system, the admin password is "nathan".
 
-After importing bls.sql into the MySQL database, you can login Book Lib Seat with any of the following accountes:
+After importing 'bls.sql' into the MySQL database, you can login Book Lib Seat with any of the following accountes:
 
 SID: test    password: testtest
 
-\nSID: s1155100000 (password: qwer123)
+SID: s1155100000 (password: qwer123)
