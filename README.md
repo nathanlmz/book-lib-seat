@@ -11,6 +11,6 @@ The course project for group 24 of CSCI3100 Software Engineering in CUHK.
 
 After importing 'bls.sql' into the MySQL database, you can login Book Lib Seat with any of the following accountes:
 
-SID: test    password: testtest
+SID: test    password: test
 
 SID: s1155100000 (password: qwer123)
