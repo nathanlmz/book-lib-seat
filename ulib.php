@@ -6,6 +6,32 @@
         exit();
     }
      $gsid = $_SESSION['sid'];
+
+     if (isset($_POST['second'])) {
+        header("Location: ../bls/ulib/secondfloor.php");
+        exit();
+    }
+    else if(isset($_POST['third'])){
+        header("Location: ../bls/ulib/thirdfloor.php");
+        exit();
+    }
+    else if(isset($_POST['forth'])){
+        header("Location: ../bls/ulib/forthfloor.php");
+        exit();
+    }
+    
+    else if(isset($_POST['ucsecond'])){
+        header("Location: ../bls/ulib/UCsecondfloor.php");
+        exit();
+    }
+    else if(isset($_POST['ccsecond'])){
+        header("Location: ../bls/ulib/ccsecondfloor.php");
+        exit();
+    }
+    else if(isset($_POST['ccfirst'])){
+        header("Location: ../bls/ulib/ccfirstfloor.php");
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -21,41 +47,43 @@
 
 <body>
     <header><h1 class="title">Book Lib Seat</h1></header>
-    <p class="chooselib" style="font-size:24px;">
-        University Library
-        <br>
-    </p>
+    
     <?php
-    // We include the codes of the buttons in php because we want to keep the sid
-        
-        echo '<form method="post">
+    if((!isset($_POST['ulib']))&&(!isset($_POST['uclib']))&&(!isset($_POST['cclib']))){
+        echo '<p class="chooselib" style="font-size:30px;font-weight:bold;color:indigo;">
+        Please choose a library<br></p>
+        <form method="post">
+        <button name="ulib">University Library</button>
+        <button name="uclib">United College Library</button>
+        <button name="cclib">Chung Chi College Library</button>
+    </form>';
+    }
+
+    else if (isset($_POST['ulib'])){  
+        echo '<p class="chooselib" style="font-size:28px;">
+        University Library<br></p>
+            <form method="post">
             <button name="second">2nd Floor</button>
             <button name="third">3rd Floor</button>
             <button name="forth">4th Floor</button>
-        </form>
-        
-        <p class="chooselib" style="font-size:24px;">United College Library</p>
+        </form>';
+
+    }
+    else if(isset($_POST['uclib'])){
+        echo '<p class="chooselib" style="font-size:28px;">United College Library</p>
         <form method="post">
         <button name="ucsecond">2nd Floor</button>
-        <button name="return">Return to previous page</button>
         </form>';
-        if (isset($_POST['second'])) {
-            header("Location: ../bls/ulib/secondfloor.php");
-            exit();
-        }
-        else if(isset($_POST['third'])){
-            header("Location: ../bls/ulib/thirdfloor.php");
-            exit();
-        }
-        else if(isset($_POST['forth'])){
-            header("Location: ../bls/ulib/forthfloor.php");
-            exit();
-        }
-        else if(isset($_POST['ucsecond'])){
-            header("Location: ../bls/ulib/UCsecondfloor.php");
-            exit();
-        }
-        else if(isset($_POST['return'])){
+    }
+    else if(isset($_POST['cclib'])){
+        echo '<p class="chooselib" style="font-size:28px;">Chung Chi College Library</p>
+        <form method="post">
+        <button name="ccfirst">1st Floor</button>
+        <button name="ccsecond">2nd Floor</button>
+        </form>';
+    }
+        echo '<form method="POST"><button name="home">Return to home page</button></form>';
+        if(isset($_POST['home'])){
             header("Location: ../bls/home.php");
             exit();
         }

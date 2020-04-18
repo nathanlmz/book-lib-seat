@@ -14,7 +14,7 @@
 <head>
     <title>Book Lib Seat</title>
     <link rel="stylesheet" href="stylesheets/home.style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=0.78">\
+    <meta name="viewport" content="width=device-width, initial-scale=0.78">
     <style>
          button:hover {background-color:#4B0082}
     </style>
@@ -44,7 +44,7 @@
         else if(isset($_POST['logout'])){
             session_unset();
             session_destroy(); 
-            header("Location: http://localhost/bls/index.php");
+            header("Location: ../index.php");
             exit();
         }
     ?>

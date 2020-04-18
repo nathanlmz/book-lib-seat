@@ -31,7 +31,7 @@
     
     <?php
         $gsid = $_SESSION['sid'];   //Get sid
-        if((!isset($_POST['second']))&&(!isset($_POST['third']))&&(!isset($_POST['forth']))&&(!isset($_POST['ucsecond']))){    // If none of the buttons are pressed
+        if((!isset($_POST['second']))&&(!isset($_POST['third']))&&(!isset($_POST['forth']))&&(!isset($_POST['ucsecond']))&&(!isset($_POST['ccfirst']))&&(!isset($_POST['ccsecond']))){    // If none of the buttons are pressed
             // show the buttons
             echo '<h1 class="chooselib" style="font-size:36px;color:indigo;">Library Floorplan</h1>';
             echo '<p class="chooselib" style="font-size:24px;">
@@ -43,6 +43,9 @@
                 <button name="forth">4th Floor</button>
                 <p class="chooselib" style="font-size:24px;">United College Library<br></p>
                 <button name="ucsecond">2nd Floor</button>
+                <p class="chooselib" style="font-size:24px;">Chung Chi College Library<br></p>
+                <button name="ccfirst">1st Floor</button>
+                <button name="ccsecond">2nd Floor</button><br>
                 <button name="viewbook">View my bookings</button>
             <button name="home">Return to home page</button>
             </form>';
@@ -68,6 +71,16 @@
             echo '<img src="ulib/uclib_2F.png" class="center">';     // Show the floorplan of the 2nd floor
             //exit();
         }
+        else if (isset($_POST['ccfirst'])) {   //If "2nd Floor" is pressed
+            echo '<p class="chooselib">Chung Chi College Library - 1/F</p>';
+            echo '<img src="ulib/cclib_1F.png" class="center">';     // Show the floorplan of the 2nd floor
+            //exit();
+        }
+        else if (isset($_POST['ccsecond'])) {   //If "2nd Floor" is pressed
+            echo '<p class="chooselib">Chung Chi College Library - 2/F</p>';
+            echo '<img src="ulib/cclib_2F.png" class="center">';     // Show the floorplan of the 2nd floor
+            //exit();
+        }
         else if(isset($_POST['viewbook'])){ //If the button "View my bookings" is pressed
             header("Location: ../bls/viewbook.php"); //Direct to viewbook.php
             exit();
@@ -76,7 +89,7 @@
             header("Location: ../bls/home.php");     //Direct to homepages
             exit();
         }
-        if((isset($_POST['second']))||(isset($_POST['third']))||(isset($_POST['forth']))||(isset($_POST['ucsecond']))){   
+        if((isset($_POST['second']))||(isset($_POST['third']))||(isset($_POST['forth']))||(isset($_POST['ucsecond']))||(isset($_POST['ccsecond']))||(isset($_POST['ccfirst']))){   
             //If any floorplan is shown, we only show the "Return to previous page" button.
             echo '<form method="POST"><button name="return">Return to previous page</button></form>';
             if(isset($_POST['return'])){

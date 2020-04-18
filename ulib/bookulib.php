@@ -140,6 +140,9 @@
                             if($lib=="uclib"){
                                 $libmessage="United College Library";
                             }
+                            else if($lib=="cclib"){
+                                $libmessage="Chung Chi College Library";
+                            }
                             else{
                                 $libmessage="The University Library";
                             }

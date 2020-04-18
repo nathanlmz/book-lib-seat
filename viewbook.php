@@ -72,6 +72,9 @@
                  else if($library=="uclib"){
                     echo "<td>United College Library</td>";
                 }
+                else if($library=="cclib"){
+                    echo "<td>Chung Chi College Library</td>";
+                }
                  else{
                     echo "<td>".$row['lib']."</td>";
                  }
