@@ -1,8 +1,11 @@
 <?php
-    if(!isset($_GET['sid'])){
+    session_start();
+    if(!isset($_SESSION['sid'])){
+        //If there is no sid on url, return to the login page.
         header("Location: ../bls/index.php");
         exit();
     }
+     $gsid = $_SESSION['sid'];
 ?>
 
 <!DOCTYPE html>
@@ -10,6 +13,10 @@
 <head>
     <title>Book Lib Seat</title>
     <link rel="stylesheet" href="stylesheets/home.style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
+    <style>
+        button:hover {background-color:#4B0082}
+    </style>
 </head>
 
 <body>
@@ -20,7 +27,6 @@
     
     <?php
         // We include the codes of the buttons in php because we want to keep the sid
-        $gsid = $_GET['sid'];
         echo '<form method="post">
                 <button name="bookseat">Book a seat</button>
                 <button name="viewbook">View my bookings</button>
@@ -29,22 +35,24 @@
                 <button name="logout">Log out</button>
             </form>';
         if (isset($_POST['bookseat'])) {
-            header("Location: ../bls/lib/ulib.php?sid=".$gsid);
+            header("Location: ../bls/ulib.php");
             exit();
         }
         else if(isset($_POST['viewbook'])){
-            header("Location: ../bls/viewbook.php?sid=".$gsid);
+            header("Location: ../bls/viewbook.php");
             exit();
         }
         else if(isset($_POST['floorplan'])){
-            header("Location: ../bls/floorplan.php?sid=".$gsid);
+            header("Location: ../bls/floorplan.php");
             exit();
         }
         else if(isset($_POST['delbook'])){
-            header("Location: ../bls/delbook.php?sid=".$gsid);
+            header("Location: ../bls/delbook.php");
             exit();
         }
         else if(isset($_POST['logout'])){
+            session_unset();
+            session_destroy(); 
             header("Location: ../bls/index.php");
             exit();
         }

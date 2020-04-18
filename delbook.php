@@ -1,20 +1,24 @@
 <?php
+    session_start();
+    if(!isset($_SESSION['sid'])){
+        //If there is no sid on url, return to the login page.
+        header("Location: ../bls/index.php");
+        exit();
+    }
+    $gsid = $_SESSION['sid'];
     ob_start();
-    require 'includes/bls.dbh.php';
+    require 'includes/bls.dbh.php'; // Include the database connection script file
 
     if (isset($_POST['login-submit'])) {
 
-        // Include the database connection script file
-        require 'includes/bls.dbh.php';
-      
-        // Grab sid and password for chekcing.
+        // Get sid, password and book id.
         $usid = $_POST['sid'];
         $password = $_POST['pwd'];
         $bid = $_POST['delbook'];
       
         // Check whether there exist empty input or not.
-        if (empty($usid) || empty($password)) {
-          header("Location: ../bls/delbook.php?error=emptyfields&sid=".$usid);
+        if (empty($usid) || empty($password)|| empty($bid)) {
+          header("Location: ../bls/delbook.php?error=empty");
           exit();
         }
         else {
@@ -25,12 +29,12 @@
           // Then we prepare our SQL statement AND check if there are any errors with it.
           if (!mysqli_stmt_prepare($stmt, $sql)) {
             // If there is an error we send the user back to the signup page.
-            header("Location: ../bls/delbook.php?error=sqlerror&sid=".$usid);
+            header("Location: ../bls/delbook.php?error=sqlerror");
             exit();
           }
           else {
       
-            // If there is no error then we continue here.
+            // If there is no error then continue
       
             // Bind the type of parameters we expect to pass into the statement, and bind the data from the user.
             mysqli_stmt_bind_param($stmt, "s", $usid);
@@ -42,45 +46,49 @@
             if ($row = mysqli_fetch_assoc($result)) {
               // Match the password from the database with the password submitted by user. The result is returned to variable $pwdCheck
               $pwdCheck = password_verify($password, $row['pwd']);
-              // If they don't match then we create an error message!
-              //if ($pwdCheck == false) {
-              if ($pwdCheck == false){            //Here, the password in database is still not encripted, so we just compare the password from database and the one inputted by the user
-                // If there is an error we send the user back to the signup page.
-                header("Location: ../bls/delbook.php?error=wrongpwd&sid=".$usid);
+              // If the password is incorrect, we produce a error message.
+              if ($pwdCheck == false){           
+                // If the password is incorrect, we add error id "wrongpwd" into the url
+                header("Location: ../bls/delbook.php?error=wrongpwd");
                 exit();
               }
-              //else if ($pwdCheck == true) {
-                else if ($pwdCheck == true){      //Here, the password in database is still not encripted, so we just compare the password from database and the one inputted by the user
+                else if ($pwdCheck == true){    // If password is correct, we continue and execute the codes below
+                    // We check whether the bookid inputted by the user exists or not, and whether it is booked by the user.
                     $checkseatsql = "SELECT * FROM bookrecord WHERE bookid='".$bid."' AND sid='".$usid."'";
                     $checkseatresult = mysqli_query($conn, $checkseatsql);
 
-                    if((mysqli_num_rows($checkseatresult))) {
+                    
+                    if(!mysqli_num_rows($checkseatresult)){
+                        // If the bookid is invalid (The bookid doesn't exist or the bookid is refers to the booking by other users)
+                        // We add error id into the url link, and then an error message will be printed
+                        header("Location: ../bls/delbook.php?error=1");
+                    }
+                    else {
                         session_start();
                         // Create the session variables.
                         $_SESSION['sid'] = $row['sid'];
+                        // Delete the book record selected by user
                         $updsql = "DELETE FROM `bookrecord` WHERE bookid='".$bid."' AND sid='".$usid."'";
                         $stmt = mysqli_stmt_init($conn);
                         if (mysqli_stmt_prepare($stmt, $updsql)){
-                            // mysqli_stmt_bind_param($stmt, "sssssss", $usid, $date, $starttime, $endtime, $seat);
                             mysqli_stmt_execute($stmt);
                         }
-                        //header("Location: ../bls/delbooksuccessful.php?sid=".$usid);
-                        header("Location: ../bls/delbook.php?sid=".$usid);
+                        // After delected the record, it returns to the same webpage, but the booking record shown is updated.
+                        header("Location: ../bls/delbook.php");
                         exit();
                     }
-                    else if(!mysqli_num_rows($checkseatresult)){
-                        header("Location: ../bls/delbook.php?error=1&sid=".$usid);
-                    }
+                    
               }
             }
             else {
-              header("Location: ../index.php?error=wronguidpwd");
+                // If the SID is not found in the database, the action is failed, and an error id is added to the url
+              header("Location: ../bls/delbook.php?error=siderror");
               exit();
             }
           }
         }
         // Then we close the prepared statement and the database connection!
-        // mysqli_stmt_close($stmt);
+         mysqli_stmt_close($stmt);
         // mysqli_close($conn);
       }
 ?>
@@ -90,6 +98,7 @@
 <head>
     <title>Book Lib Seat</title>
     <link rel="stylesheet" href="stylesheets/home.style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=0.7">
     <style>
         table, th, td {
             border: 1px solid black;
@@ -131,12 +140,24 @@
    
     <?php
         if(isset($_GET['error'])){
-            echo '<h1 style="font-size:28px;color:red;text-align:center;font-family:arial;">Book ID invalid!</h1>';
+            $errorCheck = $_GET['error'];
+            if($errorCheck == "empty"){
+                echo '<h1 style="font-size:28px;color:red;text-align:center;font-family:arial;">Please fill in all the fields!</h1>';
+            }
+            else if($errorCheck == "wrongpwd"){
+                echo '<h1 style="font-size:28px;color:red;text-align:center;font-family:arial;">The password is incorrect!</h1>';
+            }
+            else if($errorCheck == "siderror"){
+                echo '<h1 style="font-size:28px;color:red;text-align:center;font-family:arial;">Student/staff id invalid!</h1>';
+            }
+            else{
+                echo '<h1 style="font-size:28px;color:red;text-align:center;font-family:arial;">Book ID invalid!</h1>';
+            }
         }
         echo '<p class="chooselib">
             My booking record
             </p>';
-         $gsid = $_GET['sid'];
+         $gsid = $_SESSION['sid'];
          $selsql = "SELECT bookid, bookdate, starttime, endtime, lib, area, seatid FROM bookrecord WHERE sid='".$gsid."' AND bookdate>=CURRENT_DATE() ORDER BY bookdate ASC";
          $result = mysqli_query($conn, $selsql);
 
@@ -157,7 +178,8 @@
                  <th>To</th>
              </tr>'; 
              while($row = mysqli_fetch_assoc($result)) {
-                $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$row['area']."'";
+                // $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$row['area']."'";
+                $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$row['area']."' AND `lib`='".$row['lib']."'";
                 $getfloorresult = mysqli_query($conn, $getfloorsql);
                 $getfloorrow = mysqli_fetch_array($getfloorresult);
 
@@ -167,6 +189,9 @@
                  if($library=="ulib"){
                      echo "<td>University Library</td>";
                  }
+                 else if($library=="uclib"){
+                    echo "<td>United College Library</td>";
+                }
                  else{
                     echo "<td>".$row['lib']."</td>";
                  }
@@ -187,9 +212,9 @@
         echo '<p align="center" class="ques">Please insert the book ID that you want to cancel</p>
         <input type="text" id="delbook" name="delbook" clss="bs" style="width:404px;"><br>';
         echo '<p align="center" style="font-size:20px;" class="ques">Please login again to confirm.</p><br>';
-                if(isset($_GET['sid'])){
-                    $first = $_GET['sid'];
-                    echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$first.'" class="bs"><br>';
+                if(isset($_SESSION['sid'])){
+                    $psid = $_SESSION['sid'];
+                    echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$psid.'" class="bs"><br>';
                 }
                 else{
                     echo '<input type="text" name="sid" placeholder="Student/Staff ID" class="bs"><br>';
@@ -204,11 +229,11 @@
                 <button name="home" style="width:416px">Return to homepage</button>
             </form>';
         if(isset($_POST['home'])){
-            header("Location: ../bls/home.php?sid=".$gsid);
+            header("Location: ../bls/home.php");
             exit();
         }
         else if(isset($_POST['floorplan'])){
-            header("Location: ../bls/floorplan.php?sid=".$gsid);
+            header("Location: ../bls/floorplan.php");
             exit();
         }
         ob_end_flush();

@@ -5,6 +5,10 @@
         <meta charset="utf-8">
         <title>Book Lib Seat</title>
         <link rel="stylesheet" href="stylesheets/login.style.css">   <!-- Include the stylesheet -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            button:hover {background-color:#4B0082}
+        </style>
     </head>
 
     <body>

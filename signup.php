@@ -2,37 +2,44 @@
   // To make sure we don't need to create the header section of the website on multiple pages, we instead create the header HTML markup in a separate file which we then attach to the top of every HTML page on our website. In this way if we need to make a small change to our header we just need to do it in one place. This is a VERY cool feature in PHP!
   
 ?>
-
-    <main>
+<html>
+<head>
+<link rel="stylesheet" href="stylesheets/login.style.css">
+</head>
+    <body>
       <div class="wrapper-main">
         <section class="section-default">
-          <h1>Signup</h1>
+        <h1 class="title">Book Lib Seat</h1>
           <?php
           // Here we create an error message if the user made an error trying to sign up.
           if (isset($_GET["error"])) {
             if ($_GET["error"] == "emptyfields") {
-              echo '<p class="signuperror">Fill in all fields!</p>';
+              echo '<p class="error">Fill in all fields!</p>';
             }
             else if ($_GET["error"] == "invaliduidmail") {
-              echo '<p class="signuperror">Invalid username and e-mail!</p>';
+              echo '<p class="error">Invalid username and e-mail!</p>';
             }
             else if ($_GET["error"] == "invaliduid") {
-              echo '<p class="signuperror">Invalid username!</p>';
+              echo '<p class="error">Invalid username!</p>';
             }
             else if ($_GET["error"] == "invalidmail") {
-              echo '<p class="signuperror">Invalid e-mail!</p>';
+              echo '<p class="error">Invalid e-mail!</p>';
             }
             else if ($_GET["error"] == "passwordcheck") {
-              echo '<p class="signuperror">Your passwords do not match!</p>';
+              echo '<p class="error">Your passwords do not match!</p>';
             }
             else if ($_GET["error"] == "usertaken") {
-              echo '<p class="signuperror">Username is already taken!</p>';
+              echo '<p class="error">Username is already taken!</p>';
             }
+            else if ($_GET["error"] == "admpwderror") {
+              echo '<p class="error">Admin password incorrect!</p>';
+            }
+            
           }
           // Here we create a success message if the new user was created.
           else if (isset($_GET["signup"])) {
             if ($_GET["signup"] == "success") {
-              echo '<p class="signupsuccess">Signup successful!</p>';
+              echo '<p class="success">Signup successful!</p>';
             }
           }
           ?>
@@ -42,36 +49,27 @@
 
             // We check username.
             if (!empty($_GET["sid"])) {
-              echo '<input type="text" name="sid" placeholder="Username" value="'.$_GET["sid"].'">';
+              echo '<input type="text" name="sid" placeholder="Username" value="'.$_GET["sid"].'"><br>';
             }
             else {
-              echo '<input type="text" name="sid" placeholder="Username">';
+              echo '<input type="text" name="sid" placeholder="Username"><br>';
             }
 
             // We check e-mail.
             if (!empty($_GET["mail"])) {
-              echo '<input type="text" name="mail" placeholder="E-mail" value="'.$_GET["mail"].'">';
+              echo '<input type="text" name="mail" placeholder="E-mail" value="'.$_GET["mail"].'"><br>';
             }
             else {
-              echo '<input type="text" name="mail" placeholder="E-mail">';
+              echo '<input type="text" name="mail" placeholder="E-mail"><br>';
             }
             ?>
-            <input type="password" name="pwd" placeholder="Password">
-            <input type="password" name="pwd-repeat" placeholder="Repeat password">
-            <input type="password" name="admpwd" placeholder="Admin password">
-            <button type="submit" name="signup-submit">Signup</button>
+            <input type="password" name="pwd" placeholder="Password"><br>
+            <input type="password" name="pwd-repeat" placeholder="Repeat password"><br>
+            <input type="password" name="admpwd" placeholder="Admin password"><br>
+            <button type="submit" name="signup-submit">Signup</button><br>
           </form>
-          <!--
-          NOTES FOR ME BEFORE DOING PHP!
-          <form class="form-signup" action="includes/signup.inc.php" method="post">
-            <input type="text" name="uid" placeholder="Username">
-            <input type="text" name="mail" placeholder="E-mail">
-            <input type="password" name="pwd" placeholder="Password">
-            <input type="password" name="pwd-repeat" placeholder="Repeat password">
-            <button type="submit" name="signup-submit">Signup</button>
-          </form>
-          -->
         </section>
       </div>
-    </main>
+    </body>
 
+</html>

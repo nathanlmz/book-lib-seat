@@ -1,3 +1,10 @@
+
+img {
+    float: center;
+}
+p{
+    text-align: center;
+}
 .title{
     color: white;
     font-family: arial;
@@ -32,10 +39,11 @@ button{
     margin-bottom: 28px;
 }
 
+button:hover {background-color:#4B0082}
 form input{
     display: block;
-    width: 300px;
-    height: 30px;
+    width: 404px;
+    height: 45px;
     margin: auto;
     border-color: purple;
     border-width: 1px;
@@ -45,6 +53,5 @@ form input{
     font-weight: bold;
     font-size: 16px;
     text-align: left;
-    padding-left: 10px;
     
 }

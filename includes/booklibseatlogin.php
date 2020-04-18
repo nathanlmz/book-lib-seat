@@ -53,7 +53,7 @@ if (isset($_POST['login-submit'])) {
           // Create the session variables.
           $_SESSION['sid'] = $row['sid'];
           //header("Location: ../index.php?login=success");
-          header("Location: ../home.php?sid=".$usid);
+          header("Location: ../home.php");
           exit();
         }
       }

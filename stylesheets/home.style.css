@@ -32,6 +32,8 @@ button{
     margin-bottom: 28px;
 }
 
+button:hover {background-color:#4B0082}
+
 form input{
     display: block;
     width: 300px;

@@ -1,8 +1,13 @@
 <?php
+    session_start();
+    if(!isset($_SESSION['sid'])){
+        //If there is no sid on url, return to the login page.
+        header("Location: ../bls/index.php");
+        exit();
+    }
+    $gsid = $_SESSION['sid'];
     ob_start();
     require 'includes/bls.dbh.php';
-
-
 ?>
 
 <!DOCTYPE html>
@@ -10,6 +15,7 @@
 <head>
     <title>Book Lib Seat</title>
     <link rel="stylesheet" href="stylesheets/home.style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=0.78">
     <style>
         table, th, td {
             border: 1px solid black;
@@ -22,6 +28,7 @@
             padding: 5px;
             text-align: center;   
         }
+        button:hover {background-color:#4B0082}
     </style>
 </head>
 
@@ -32,7 +39,7 @@
         My booking record
     </p>
     <?php
-         $gsid = $_GET['sid'];
+         $gsid = $_SESSION['sid'];
          $selsql = "SELECT bookdate, starttime, endtime, lib, area, seatid FROM bookrecord WHERE sid='".$gsid."' AND bookdate>=CURRENT_DATE() ORDER BY bookdate ASC";
          $result = mysqli_query($conn, $selsql);
 
@@ -53,7 +60,7 @@
              </tr>'; 
              while($row = mysqli_fetch_assoc($result)) {
                  // echo "<br> id: ". $row["id"]. " - Name: ". $row["firstname"]. " " . $row["lastname"] . "<br>";
-                $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$row['area']."'";
+                $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$row['area']."' AND `lib`='".$row['lib']."'";
                 $getfloorresult = mysqli_query($conn, $getfloorsql);
                 $getfloorrow = mysqli_fetch_array($getfloorresult);
                  
@@ -62,6 +69,9 @@
                  if($library=="ulib"){
                      echo "<td>University Library</td>";
                  }
+                 else if($library=="uclib"){
+                    echo "<td>United College Library</td>";
+                }
                  else{
                     echo "<td>".$row['lib']."</td>";
                  }
@@ -87,15 +97,15 @@
         //     exit();
         // }
         if(isset($_POST['delbook'])){
-            header("Location: ../bls/delbook.php?sid=".$gsid);
+            header("Location: ../bls/delbook.php");
             exit();
         }
         else if(isset($_POST['home'])){
-            header("Location: ../bls/home.php?sid=".$gsid);
+            header("Location: ../bls/home.php");
             exit();
         }
         else if(isset($_POST['floorplan'])){
-            header("Location: ../bls/floorplan.php?sid=".$gsid);
+            header("Location: ../bls/floorplan.php");
             exit();
         }
         ob_end_flush();
