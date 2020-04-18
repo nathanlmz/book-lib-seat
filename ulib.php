@@ -49,42 +49,50 @@
     <header><h1 class="title">Book Lib Seat</h1></header>
     
     <?php
-    if((!isset($_POST['ulib']))&&(!isset($_POST['uclib']))&&(!isset($_POST['cclib']))){
+    if((!isset($_GET['ulib']))&&(!isset($_GET['uclib']))&&(!isset($_GET['cclib']))){
         echo '<p class="chooselib" style="font-size:30px;font-weight:bold;color:indigo;">
         Please choose a library<br></p>
-        <form method="post">
+        <form method="GET">
         <button name="ulib">University Library</button>
         <button name="uclib">United College Library</button>
         <button name="cclib">Chung Chi College Library</button>
     </form>';
+    echo '<form method="POST"><button name="home">Return to home page</button></form>';
     }
 
-    else if (isset($_POST['ulib'])){  
+    else if (isset($_GET['ulib'])){  
         echo '<p class="chooselib" style="font-size:28px;">
         University Library<br></p>
             <form method="post">
             <button name="second">2nd Floor</button>
             <button name="third">3rd Floor</button>
             <button name="forth">4th Floor</button>
+            <button name="return">Return to previous page</button>
         </form>';
 
     }
-    else if(isset($_POST['uclib'])){
+    else if(isset($_GET['uclib'])){
         echo '<p class="chooselib" style="font-size:28px;">United College Library</p>
         <form method="post">
         <button name="ucsecond">2nd Floor</button>
+        <button name="return">Return to previous page</button>
         </form>';
     }
-    else if(isset($_POST['cclib'])){
+    else if(isset($_GET['cclib'])){
         echo '<p class="chooselib" style="font-size:28px;">Chung Chi College Library</p>
         <form method="post">
         <button name="ccfirst">1st Floor</button>
         <button name="ccsecond">2nd Floor</button>
+        <button name="return">Return to previous page</button>
         </form>';
     }
-        echo '<form method="POST"><button name="home">Return to home page</button></form>';
+        
         if(isset($_POST['home'])){
             header("Location: ../bls/home.php");
+            exit();
+        }
+        else if(isset($_POST['return'])){
+            header("Location: ../bls/ulib.php");
             exit();
         }
     ?>

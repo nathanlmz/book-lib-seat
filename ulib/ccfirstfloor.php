@@ -45,7 +45,7 @@
             exit();
         }
         else if(isset($_POST['return'])){
-            header("Location: ../ulib.php");
+            header("Location: ../ulib.php?cclib=");
             exit();
         }
     ?>

@@ -72,6 +72,7 @@ if (isset($_POST['signup-submit'])) {
         exit();
       }
       else {
+        // fetch the admin's password from the account database
         $admsql = "SELECT * FROM accounts WHERE sid='admin';";
         $admresult = mysqli_query($conn, $admsql);
         $admrow = mysqli_fetch_assoc($admresult);
@@ -79,7 +80,7 @@ if (isset($_POST['signup-submit'])) {
 
         $admpwdCheck = password_verify($admpwd, $admrow['pwd']);
         if($admpwdCheck == true){
-          // Prepared statements works by us sending SQL to the database first, and then later we fill in the placeholders (this is a placeholder -> ?) by sending the users data.
+          // if the admin's password is correct, the following account info are inserted into the database
           $sql = "INSERT INTO accounts (`sid`, `linkmail`, `pwd`) VALUES (?, ?, ?);";
           // Here we initialize a new statement using the connection from the dbh.inc.php file.
           $stmt = mysqli_stmt_init($conn);
@@ -90,17 +91,12 @@ if (isset($_POST['signup-submit'])) {
             exit();
           }
           else {
-
-            // If there is no error then we continue the script!
-
-            // Before we send ANYTHING to the database we HAVE to hash the users password to make it un-readable in case anyone gets access to our database without permission!
-            // The hashing method I am going to show here, is the LATEST version and will always will be since it updates automatically. DON'T use md5 or sha256 to hash, these are old and outdated!
+            // For data safety, we hash the password before inserting the account into the databse
             $hashedPwd = password_hash($password, PASSWORD_DEFAULT);
 
             // Next we need to bind the type of parameters we expect to pass into the statement, and bind the data from the user.
             mysqli_stmt_bind_param($stmt, "sss", $sid, $email, $hashedPwd);
-            // Then we execute the prepared statement and send it to the database!
-            // This means the user is now registered! :)
+            // Execute the prepared statement and send it to the database
             mysqli_stmt_execute($stmt);
             // Lastly we send the user back to the signup page with a success message!
             header("Location: ../signup.php?signup=success");
@@ -110,18 +106,19 @@ if (isset($_POST['signup-submit'])) {
           
         }
         else if ($admpwdCheck == false){
+          // If the admin's password is incorrect, an error message displayed, and signup failed
           header("Location: ../signup.php?error=admpwderror");
           exit();
         }
       }
     }
   }
-  // Then we close the prepared statement and the database connection!
+  // Close the prepared statement and the database connection!
   mysqli_stmt_close($stmt);
   mysqli_close($conn);
 }
 else {
-  // If the user tries to access this page an inproper way, we send them back to the signup page.
+  // If someone tries to access this page an inproper way, we send them back to the signup page.
   header("Location: ../signup.php");
   exit();
 }

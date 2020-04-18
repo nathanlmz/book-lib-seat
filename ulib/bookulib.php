@@ -324,8 +324,9 @@
                 ';
                 echo '<form method="POST"><button name="return">Return to previous page</button></form>';
                 if(isset($_POST['return'])){
-                    header("Location: ../ulib.php");
-                    exit();
+                        header("Location: ../ulib.php");
+                        exit();
+                    
                 }
             }
         ?>

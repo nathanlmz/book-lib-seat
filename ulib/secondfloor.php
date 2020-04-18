@@ -40,11 +40,12 @@
             <button name="return">Return to previous page</button>
         </form>';
         if (isset($_POST['area_a'])) {
+            $_SESSION['lib'] = "ulib";
             header("Location: ../ulib/bookulib.php?area=A");
             exit();
         }
         else if(isset($_POST['return'])){
-            header("Location: ../ulib.php");
+            header("Location: ../ulib.php?ulib=");
             exit();
         }
     ?>

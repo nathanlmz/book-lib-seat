@@ -41,15 +41,17 @@
             <button name="return">Return to previous page</button>
         </form>';
         if (isset($_POST['area_e'])) {
+            $_SESSION['lib'] = "ulib";
             header("Location: ../ulib/bookulib.php?area=E");
             exit();
         }
         else if (isset($_POST['area_f'])) {
+            $_SESSION['lib'] = "ulib";
             header("Location: ../ulib/bookulib.php?area=F");
             exit();
         }
         else if(isset($_POST['return'])){
-            header("Location: ../ulib.php");
+            header("Location: ../ulib.php?ulib=");
             exit();
         }
     ?>

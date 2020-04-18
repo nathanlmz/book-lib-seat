@@ -42,19 +42,22 @@
             <button name="return">Return to previous page</button>
         </form>';
         if (isset($_POST['area_b'])) {
+            $_SESSION['lib'] = "ulib";
             header("Location: ../ulib/bookulib.php?area=B");
             exit();
         }
         else if (isset($_POST['area_c'])) {
+            $_SESSION['lib'] = "ulib";
             header("Location: ../ulib/bookulib.php?area=C");
             exit();
         }
         else if (isset($_POST['area_d'])) {
+            $_SESSION['lib'] = "ulib";
             header("Location: ../ulib/bookulib.php?area=D");
             exit();
         }
         else if(isset($_POST['return'])){
-            header("Location: ../ulib.php");
+            header("Location: ../ulib.php?ulib=");
             exit();
         }
     ?>
