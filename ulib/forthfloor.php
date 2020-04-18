@@ -2,7 +2,7 @@
     session_start();
     if(!isset($_SESSION['sid'])){
         //If there is no sid on url, return to the login page.
-        header("Location: ../bls/index.php");
+        header("Location: ../index.php");
         exit();
     }
      $gsid = $_SESSION['sid'];
