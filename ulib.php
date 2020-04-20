@@ -50,7 +50,7 @@
     
     <?php
     if((!isset($_GET['ulib']))&&(!isset($_GET['uclib']))&&(!isset($_GET['cclib']))){
-        echo '<p class="chooselib" style="font-size:30px;font-weight:bold;color:indigo;">
+        echo '<p class="chooselib">
         Please choose a library<br></p>
         <form method="GET">
         <button name="ulib">University Library</button>

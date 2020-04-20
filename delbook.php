@@ -212,7 +212,7 @@
         echo '<form action="" method="POST">';
         // echo '<p align="center" style="font-size:20px;">Which seat do you want to choose?</p>
         // <input type="text" id="seat" name="seat" class="bs" placeholder="'.$area.'1-'.$area.'20"><br>';
-        echo '<p align="center" class="ques">Please insert the book ID that you want to cancel</p>
+        echo '<p align="center" class="ques">Please insert the <font color="red">book ID</font> that you want to cancel</p>
         <input type="text" id="delbook" name="delbook" clss="bs" style="width:404px;"><br>';
         echo '<p align="center" style="font-size:20px;" class="ques">Please login again to confirm.</p><br>';
                 if(isset($_SESSION['sid'])){

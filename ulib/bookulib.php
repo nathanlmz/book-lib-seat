@@ -14,6 +14,16 @@
      else{
          $lib = $_SESSION['lib'];
      }
+    
+     if($lib=="uclib"){
+        $libmessage="United College Library";
+    }
+    else if($lib=="cclib"){
+        $libmessage="Chung Chi College Library";
+    }
+    else{
+        $libmessage="University Library";
+    }
      date_default_timezone_set("Asia/Hong_Kong");
 
     require 'bls.dbh.php';
@@ -137,15 +147,7 @@
                             $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$area."' AND `lib`='".$lib."'";
                             $getfloorresult = mysqli_query($conn, $getfloorsql);
                             $getfloorrow = mysqli_fetch_array($getfloorresult);
-                            if($lib=="uclib"){
-                                $libmessage="United College Library";
-                            }
-                            else if($lib=="cclib"){
-                                $libmessage="Chung Chi College Library";
-                            }
-                            else{
-                                $libmessage="The University Library";
-                            }
+                            
 
                             //Send email to user
                             $getmailsql = "SELECT `linkmail` FROM `accounts` WHERE `sid`='".$usid."'";
@@ -186,6 +188,7 @@
                             <tr><th>Seat id</th>
                                 <td>'.$seat.'</td></tr>
                             </table>
+                            <br><br>
                             </body>
                             ';
                             
@@ -333,6 +336,8 @@
         <?php
             if(isset($_GET['submit'])){
                 echo '<table style="font-size:22px;margin-left:auto;margin-right:auto;border-collapse: collapse;text-align:left;width:auto;">';
+                echo '<tr><th>Library</th><td>'.$libmessage.'</td></tr>';
+                echo '<tr><th>Area</th><td>'.$area.'</td></tr>';
                 echo '<tr><th>Date</th><td>'.$date.'</td></tr>';
                 echo '<tr><th>Time</th><td>'.$starttime.'  to  '.$endtime.'</td></tr>';
                 // echo '<tr><th style="padding-right: 15px;">end time:</th><td>'.$endtime.'</td></tr>';
@@ -342,23 +347,28 @@
                 $seatresult = mysqli_query($conn, $areaseatsql);
                 $seatrow = mysqli_fetch_array($seatresult);
 
-                $selsql = "SELECT seatid FROM bookrecord WHERE area='".$area."' AND bookdate='".$date."' AND ((starttime<='".$starttime."' AND endtime>='".$starttime."') OR (starttime<='".$endtime."' AND endtime>='".$endtime."') OR (starttime>='".$starttime."' AND endtime<='".$endtime."')) ORDER BY length(seatid) ASC, seatid ASC;";
+                $selsql = "SELECT seatid FROM bookrecord WHERE lib='".$lib."'AND area='".$area."' AND bookdate='".$date."' AND ((starttime<='".$starttime."' AND endtime>='".$starttime."') OR (starttime<='".$endtime."' AND endtime>='".$endtime."') OR (starttime>='".$starttime."' AND endtime<='".$endtime."')) ORDER BY length(seatid) ASC, seatid ASC;";
                 $result = mysqli_query($conn, $selsql);
 
                 if(!mysqli_num_rows($result)) {
-                    echo "<p align='center'>There is no seat booked<br>
-                    You can choose ANY seat in this area with seat id ".$area."1-".$area."".$seatrow['seatnum'];
+                    echo "<p align='center' style='font-size:18px;font-family:arial;'>There is no seat booked<br>
+                    You can choose <font color='red' style='font-size:24px;'>ANY</font> seat in this area with seat id 
+                    <font color='red' style='font-size:24px;'>".$area."1-".$area."".$seatrow['seatnum'];
+                    echo "</font>";
                 }
                 else {
                     // output data of each row
-                    echo "<p align='center' style='font-size:24px'>Seat(s) reserved: <br>"; 
+                    echo "<p align='center' style='font-size:24px'>Seat(s) reserved:<br>";
+                    echo "<font align='center' style='font-size:28px;color:indigo;font-family:calibri;font-weight:bold;'>" ;
                     while($row = mysqli_fetch_assoc($result)) {
-                        // echo "<br> id: ". $row["id"]. " - Name: ". $row["firstname"]. " " . $row["lastname"] . "<br>";
                         echo $row['seatid'].", ";
                     }
-                    
-                    echo "<br><br>You can choose OTHER seats in this area with seat id:<br>".$area."1 - ".$area."".$seatrow['seatnum'];
-                    echo "</p>";
+                    echo "</font></p>";
+                    echo "<p align='center' style='font-size:20px'>
+                    You can choose <font color='red'>OTHER</font> seats in this area with seat id:<br>
+                    <font align='center' style='font-size:28px;color:indigo;font-family:calibri;font-weight:bold;'>
+                    ".$area."1 - ".$area."".$seatrow['seatnum'];
+                    echo "</font></p>";
                 }
                 
             }

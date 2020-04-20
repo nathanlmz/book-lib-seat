@@ -22,12 +22,12 @@
 
 <body>
     <header><h1 class="title">Book Lib Seat</h1></header>
-    <p align="center">
-        <font face="arial" color="green" size="6"><b>BOOK SUCCESSFUL!</b></font>
-        <br><br>
+    <p align="center" style="color:black;font-size:22px;font-weight:bold;font-family:arial;">
+        <font face="arial" color="green" size="6"><b>BOOK SUCCESSFUL!</b></font><br><br>
+        An confirmation email has been sent <br>to your link email address.
     </p>
     <?php
-    // We include the codes of the buttons in php because we want to keep the sid
+
         echo '<form method="post">
                 <button name="homepage">Return Homepage</button>
                 <button name="viewbook">View my bookings</button>

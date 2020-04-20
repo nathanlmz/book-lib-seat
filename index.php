@@ -48,11 +48,11 @@
                     exit();
                 }
                 elseif($errorCheck =="wrongpwd"){
-                    echo "<p class='error'>The password is wrong!</p>";
+                    echo "<p class='error'>The password is incorrect!</p>";
                     exit();
                 }
                 elseif($errorCheck == "wronguidpwd"){
-                    echo "<p class='error'>Student/staff id doesn't exist!</p>";
+                    echo "<p class='error'>Student/staff id invalid!</p>";
                     exit();
                 }
             }
