@@ -312,8 +312,7 @@
                 $area = $_GET['area'];
             }
             if(!isset($_GET['submit'])){
-                echo '
-                <form method="GET">
+                echo '<form method="GET">
                     <p align="center" class="ques">Seat Area</p>
                     <input type="text" class="bs" id="area" name="area" value="'.$area.'">
                     <p align="center" class="ques">Which day do you want to have the seat?</p>
@@ -342,6 +341,7 @@
                 echo '<tr><th>Time</th><td>'.$starttime.'  to  '.$endtime.'</td></tr>';
                 // echo '<tr><th style="padding-right: 15px;">end time:</th><td>'.$endtime.'</td></tr>';
                 echo '</table>';
+                
                 
                 $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`='".$area."' AND `lib`='".$lib."'";
                 $seatresult = mysqli_query($conn, $areaseatsql);
