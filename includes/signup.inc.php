@@ -1,12 +1,9 @@
 <?php
-// Here we check whether the user got to this page by clicking the proper signup button.
 if (isset($_POST['signup-submit'])) {
 
-  // We include the connection script so we can use it later.
-  // We don't have to close the MySQLi connection since it is done automatically, but it is a good habit to do so anyways since this will immediately return resources to PHP and MySQL, which can improve performance.
+  // Include database connection script
   require 'bls.dbh.php';
-
-  // We grab all the data which we passed from the signup form so we can use it later.
+  // Grab all the data which we passed from the signup form so we can use it later.
   $sid = $_POST['sid'];
   $email = $_POST['mail'];
   $password = $_POST['pwd'];
@@ -41,9 +38,6 @@ if (isset($_POST['signup-submit'])) {
     exit();
   }
   else {
-
-    // We also need to include another error handler here that checks whether or the username is already taken. We HAVE to do this using prepared statements because it is safer!
-
     // First we create the statement that searches our database table to check for any identical usernames.
     $sql = "SELECT 'sid' FROM accounts WHERE sid=?;";
     // We create a prepared statement.
@@ -56,7 +50,6 @@ if (isset($_POST['signup-submit'])) {
     }
     else {
       // Next we need to bind the type of parameters we expect to pass into the statement, and bind the data from the user.
-      // In case you need to know, "s" means "string", "i" means "integer", "b" means "blob", "d" means "double".
       mysqli_stmt_bind_param($stmt, "s", $sid);
       // Then we execute the prepared statement and send it to the database!
       mysqli_stmt_execute($stmt);
@@ -101,9 +94,7 @@ if (isset($_POST['signup-submit'])) {
             // Lastly we send the user back to the signup page with a success message!
             header("Location: ../signup.php?signup=success");
             exit();
-
           }
-          
         }
         else if ($admpwdCheck == false){
           // If the admin's password is incorrect, an error message displayed, and signup failed
@@ -113,12 +104,12 @@ if (isset($_POST['signup-submit'])) {
       }
     }
   }
-  // Close the prepared statement and the database connection!
+  // Close the prepared statement and the database connection
   mysqli_stmt_close($stmt);
   mysqli_close($conn);
 }
 else {
   // If someone tries to access this page an inproper way, we send them back to the signup page.
-  header("Location: ../signup.php");
+  header("Location: ../index.php");
   exit();
 }

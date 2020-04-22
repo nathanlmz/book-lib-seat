@@ -5,46 +5,61 @@
         header("Location: ../index.php");
         exit();
     }
+    // Get sid from SESSION;
      $gsid = $_SESSION['sid'];
 
-     if(!isset($_SESSION['lib'])){
-         $_SESSION['lib'] = "ulib";
-         $lib = $_SESSION['lib'];
+     if(!isset($_SESSION['lib'])){  //If there exist no library id in SESSION
+         $_SESSION['lib'] = "ulib"; //We set SESSION['lib'] to be ulib;
+         $lib = $_SESSION['lib'];   
      }
-     else{
-         $lib = $_SESSION['lib'];
+     else{  // If we have library id in SESSION
+         $lib = $_SESSION['lib'];   // We get library id into $lib
      }
     
      if($lib=="uclib"){
+         // If library id is uclib, we pass the full name of the library into $libmessage for further use
         $libmessage="United College Library";
     }
     else if($lib=="cclib"){
+        // If library id is cclib, we pass the full name of the library into $libmessage for further use
         $libmessage="Chung Chi College Library";
     }
     else{
+        // If library id is ulib, we pass the full name of the library into $libmessage for further use
         $libmessage="University Library";
     }
-     date_default_timezone_set("Asia/Hong_Kong");
+     date_default_timezone_set("Asia/Hong_Kong");   //Set timezone to Hong Kong
 
     require 'bls.dbh.php';
-    if(isset($_GET['submit'])){
+    if(isset($_GET['submit'])){ //If the user submited the date and time of booking
+        // Get date, starttime, endtime, and seat area from the url
         $date = $_GET['date'];
         $starttime = $_GET['starttime'];
         $endtime = $_GET['endtime'];
         $area = $_GET['area'];
-        
+        $multiseatsql = "SELECT * FROM bookrecord WHERE sid='".$gsid."' AND bookdate='".$date."' AND ((starttime<='".$starttime."' AND endtime>='".$starttime."') OR (starttime<='".$endtime."' AND endtime>='".$endtime."') OR (starttime>='".$starttime."' AND endtime<='".$endtime."'))";
+        $multiseatresult = mysqli_query($conn, $multiseatsql);
+        if(mysqli_num_rows($multiseatresult)){
+            //If the user has already reserved a seat at the time slot, the webpage is refreshed, an error message is shown to ask the user to select another timeslot.
+            header("Location: ../ulib/bookulib.php?area=".$area."&error=2");
+            exit();
+        }
         if (empty($date)||empty($starttime)||empty($endtime)||empty($area)) {
+            // If any of the information is missing, print error message, and ask the user to enter all of them.
             header("Location: ../ulib/bookulib.php?error=empty&area=".$area);
             exit();
         }
 
         if($date <  date("Y-m-d")){
+            // If the date chosen by user is already passed, reload the page and print error message.
             header("Location: ../ulib/bookulib.php?area=".$area."&error=date");
         }
         else if(($date == date("Y-m-d"))&&$starttime<date("H:i")){
+            // If the time chosen by user is already passed, reload the page and print error message.
             header("Location: ../ulib/bookulib.php?area=".$area."&error=time");
         }
         else if($starttime > $endtime){
+            // If start time is greater than end time, the input is invalid, reload the page, and print error message.
             header("Location: ../ulib/bookulib.php?area=".$area."&error=time");
         }
     }
@@ -53,11 +68,11 @@
         // Include the database connection script file
         require 'bls.dbh.php';
       
-        // Grab sid and password for chekcing.
+        // Get sid and password for chekcing.
         $usid = $_POST['sid'];
         $password = $_POST['pwd'];
+        // Get seat id, date, start time, end time and seat area inputted by user
         $seat = $_POST['seat'];
-
         $date = $_GET['date'];
         $starttime = $_GET['starttime'];
         $endtime = $_GET['endtime'];
@@ -65,8 +80,8 @@
       
         // Check whether there exist empty input or not.
         if (empty($usid) || empty($password)||empty($seat)||empty($date)||empty($starttime)||empty($endtime)||empty($area)) {
+            // IF any field is not inputted by user, the page is refreshed, and error message is printed.
             header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=empty&submit=");
-                    
           exit();
         }
         else {
@@ -81,9 +96,6 @@
             exit();
           }
           else {
-      
-            // If there is no error then we continue here.
-      
             // Bind the type of parameters we expect to pass into the statement, and bind the data from the user.
             mysqli_stmt_bind_param($stmt, "s", $usid);
             // Execute the prepared statement and send it to the database
@@ -94,124 +106,118 @@
             if ($row = mysqli_fetch_assoc($result)) {
               // Match the password from the database with the password submitted by user. The result is returned to variable $pwdCheck
               $pwdCheck = password_verify($password, $row['pwd']);
-              // If they don't match then we create an error message!
-              //if ($pwdCheck == false) {
-              if ($pwdCheck == false){            //Here, the password in database is still not encripted, so we just compare the password from database and the one inputted by the user
-                // If there is an error we send the user back to the signup page.
+              
+              if ($pwdCheck == false){
+                // If the password is incorrect, the webpage is refreshed, an error message will be shown.
                 // header("Location: ../ulib/bookulib.php?error=wrongpwd&sid=".$usid."&area=".$area);
                 header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=wrongpwd&submit=");
                 exit();
               }
-              //else if ($pwdCheck == true) {
-                else if ($pwdCheck == true){      //Here, the password in database is still not encripted, so we just compare the password from database and the one inputted by the user
+                else if ($pwdCheck == true){    //if Password is correct
+                    // Select the bookrecord from database to check whether the seat selected by user is occupied at the timeslot
                     $checkseatsql = "SELECT * FROM bookrecord WHERE seatid='".$seat."' AND lib='".$lib."' AND bookdate='".$date."' AND ((starttime<='".$starttime."' AND endtime>='".$starttime."') OR (starttime<='".$endtime."' AND endtime>='".$endtime."') OR (starttime>='".$starttime."' AND endtime<='".$endtime."'))";
                     $checkseatresult = mysqli_query($conn, $checkseatsql);
-                    // date_default_timezone_set("Asia/Hong_Kong");
+                    if(mysqli_num_rows($checkseatresult)){
+                        // Check whether the user has selected a seat which is already reserved. If yes, the webpage is refreshed, an error message will be shown.
+                        header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=1&submit=");
+                        exit();
+                    }
+                    // Get the number of seat in the seat area selected by user
                     $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`='".$area."' AND `lib`='".$lib."'";
                     $seatresult = mysqli_query($conn, $areaseatsql);
                     $seatrow = mysqli_fetch_array($seatresult);
-                    $seatnum = (int) filter_var($seat, FILTER_SANITIZE_NUMBER_INT);
-                    $seatchar = substr($seat,0,1);
+                    $seatnum = (int) filter_var($seat, FILTER_SANITIZE_NUMBER_INT); //Get the numerical part in seat id inputted by user for comparison
+                    $seatchar = substr($seat,0,1);  //Get the first character of the seat id inputted by user into $seatchar
                     if($seatnum>$seatrow['seatnum']){
+                        // If the seat id number inputed by user is greater the number of seats in that area, it is an invalid input, and the webpage is refreshed, and show error message.s
                         header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=3&submit=");
                     }
                     else if($seatnum<1){
+                        // If the seat id number inputed by user is less than 1, it is also identified as an invalid input.
                         header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=3&submit=");
                     }
                     else if(strcmp($seatchar,$area)!=0){
+                        // If the character part of the seat id inputed by user is not the id of the seat area, it is an invalid input.
                         header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=4&submit=");
                     }
                     else if((substr($seat,1,1)>9)||(substr($seat,1,1)<1)){
+                        // If the second character is not an number from 1 to 9, it is also identified as an invalid input.
                         header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=4&submit=");
                     }
-                    else{
-                        $multiseatsql = "SELECT * FROM bookrecord WHERE sid='".$usid."' AND bookdate='".$date."' AND ((starttime<='".$starttime."' AND endtime>='".$starttime."') OR (starttime<='".$endtime."' AND endtime>='".$endtime."') OR (starttime>='".$starttime."' AND endtime<='".$endtime."'))";
-                        $multiseatresult = mysqli_query($conn, $multiseatsql);
-                        if(mysqli_num_rows($checkseatresult)){
-                            header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=1&submit=");
+                    else {
+                        //we start to reserve the seat for user and update the book record.
+                        $_SESSION['sid'] = $row['sid'];
+                        $updsql = "INSERT INTO `bookrecord`(`sid`, `bookdate`, `starttime`, `endtime`, `seatid`, `area`, `lib`) VALUES ('".$usid."','".$date."','".$starttime."','".$endtime."','".$seat."','".$area."','".$lib."')";
+                        $stmt = mysqli_stmt_init($conn);
+                        if (mysqli_stmt_prepare($stmt, $updsql)){
+                            // mysqli_stmt_bind_param($stmt, "sssssss", $usid, $date, $starttime, $endtime, $seat);
+                            mysqli_stmt_execute($stmt);
                         }
-                        else if(mysqli_num_rows($multiseatresult)){
-                            header("Location: ../ulib/bookulib.php?area=".$area."&error=2");
-                        }
-                        else {
-                        //if((!mysqli_num_rows($checkseatresult))&&(!mysqli_num_rows($multiseatresult))) {
-                            // Create the session variables.
-                            $_SESSION['sid'] = $row['sid'];
-                            //header("Location: ../bookulib.php?login=success");
-                            $updsql = "INSERT INTO `bookrecord`(`sid`, `bookdate`, `starttime`, `endtime`, `seatid`, `area`, `lib`) VALUES ('".$usid."','".$date."','".$starttime."','".$endtime."','".$seat."','".$area."','".$lib."')";
-                            $stmt = mysqli_stmt_init($conn);
-                            if (mysqli_stmt_prepare($stmt, $updsql)){
-                                // mysqli_stmt_bind_param($stmt, "sssssss", $usid, $date, $starttime, $endtime, $seat);
-                                mysqli_stmt_execute($stmt);
-                            }
-                            $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$area."' AND `lib`='".$lib."'";
-                            $getfloorresult = mysqli_query($conn, $getfloorsql);
-                            $getfloorrow = mysqli_fetch_array($getfloorresult);
-                            
-
-                            //Send email to user
-                            $getmailsql = "SELECT `linkmail` FROM `accounts` WHERE `sid`='".$usid."'";
-                            $getmailresult = mysqli_query($conn, $getmailsql);
-                            $getmailrow = mysqli_fetch_array($getmailresult);
-                            require_once('mail.include.php');
-                            $mail->addAddress($getmailrow['linkmail']);
-                            $mail->isHTML(true);
-                            $mail->Subject = 'Book Lib Seat Confirmation Email';
-                            $mail->Body = '
-                            <head>
-                                <style>
-                                    table, th, td {
-                                        border: 1px solid black;
-                                        border-collapse: collapse;
-                                        margin-left:auto;
-                                        margin-right:auto;
-                                        
-                                    }
-                                    th, td {
-                                        padding: 5px;
-                                        text-align: center;   
-                                    }
-                                </style>
-                            </head>
-                            <body>
-                            <h1 style="text-align:center;font-size:28px;color:purple;">Book Lib Seat</h1>
-                            <p style="text-align:center;color:green;">You have successfully booked a seat</p>
-                            <table width="280">
-                            <tr><th>Library</th>
-                                <td>'.$libmessage.'</td></tr>
-                            <tr><th>Date</th>
-                                <td>'.$date.'</td></tr>
-                            <tr><th>Time</th>
-                                <td>From '.$starttime.' to '.$endtime.'</td></tr>
-                            <tr><th>Area</th>
-                                <td>'.$area.',  '.$getfloorrow['floor'].'/F</td></tr>
-                            <tr><th>Seat id</th>
-                                <td>'.$seat.'</td></tr>
-                            </table>
-                            <br><br>
-                            </body>
-                            ';
-                            
-                            $mail->send();
-
-                            header("Location: ../ulib/successful.php");
-                            exit();
-                        }
+                        $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$area."' AND `lib`='".$lib."'";
+                        $getfloorresult = mysqli_query($conn, $getfloorsql);
+                        $getfloorrow = mysqli_fetch_array($getfloorresult);
                         
+                        //Send email to user
+                        $getmailsql = "SELECT `linkmail` FROM `accounts` WHERE `sid`='".$usid."'";  //Get the link email address from account database
+                        $getmailresult = mysqli_query($conn, $getmailsql);
+                        $getmailrow = mysqli_fetch_array($getmailresult);
+                        require_once('mail.include.php');
+                        $mail->addAddress($getmailrow['linkmail']);
+                        $mail->isHTML(true);
+                        $mail->Subject = 'Book Lib Seat Confirmation Email';
+                        $mail->Body = '
+                        <head>
+                            <style>
+                                table, th, td {
+                                    border: 1px solid black;
+                                    border-collapse: collapse;
+                                    margin-left:auto;
+                                    margin-right:auto;
+                                    
+                                }
+                                th, td {
+                                    padding: 5px;
+                                    text-align: center;   
+                                }
+                            </style>
+                        </head>
+                        <body>
+                        <h1 style="text-align:center;font-size:28px;color:purple;">Book Lib Seat</h1>
+                        <p style="text-align:center;color:green;">You have successfully booked a seat</p>
+                        <table width="280">
+                        <tr><th>Library</th>
+                            <td>'.$libmessage.'</td></tr>
+                        <tr><th>Date</th>
+                            <td>'.$date.'</td></tr>
+                        <tr><th>Time</th>
+                            <td>From '.$starttime.' to '.$endtime.'</td></tr>
+                        <tr><th>Area</th>
+                            <td>'.$area.',  '.$getfloorrow['floor'].'/F</td></tr>
+                        <tr><th>Seat id</th>
+                            <td>'.$seat.'</td></tr>
+                        </table>
+                        <br><br>
+                        </body>
+                        ';
+                        
+                        $mail->send();
+
+                        header("Location: ../ulib/successful.php");
+                        exit();
                     }
+                        
+                    // }
               }
             }
             else {
-            //   header("Location: ../index.php?error=wronguidpwd");
-            header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=sidinvalid&submit=");
-                   
-              exit();
+                // If the sid inputted by user is invalid, booking failed, refresh the page, and show error message
+                header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=sidinvalid&submit=");
+                exit();
             }
           }
         }
-        // Then we close the prepared statement and the database connection!
-        // mysqli_stmt_close($stmt);
-        // mysqli_close($conn);
+        // Close prepared statement after finish booking
+         mysqli_stmt_close($stmt);
       }
 ?>
 <!DOCTYPE html>
