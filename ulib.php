@@ -61,7 +61,7 @@
     }
 
     else if (isset($_GET['ulib'])){  
-        echo '<p class="chooselib" style="font-size:28px;">
+        echo '<p class="chooselib">
         University Library<br></p>
             <form method="post">
             <button name="second">2nd Floor</button>
@@ -72,14 +72,14 @@
 
     }
     else if(isset($_GET['uclib'])){
-        echo '<p class="chooselib" style="font-size:28px;">United College Library</p>
+        echo '<p class="chooselib">United College Library</p>
         <form method="post">
         <button name="ucsecond">2nd Floor</button>
         <button name="return">Return to previous page</button>
         </form>';
     }
     else if(isset($_GET['cclib'])){
-        echo '<p class="chooselib" style="font-size:28px;">Chung Chi College Library</p>
+        echo '<p class="chooselib">Chung Chi College Library</p>
         <form method="post">
         <button name="ccfirst">1st Floor</button>
         <button name="ccsecond">2nd Floor</button>
