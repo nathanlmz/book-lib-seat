@@ -1,6 +1,3 @@
-# book-lib-seat
-The course project for group 24 of CSCI3100 Software Engineering in CUHK.
-
 ## Steps to run the codes
 1. Download and install xampp. (You can search xampp in Google, and then you can find it)
 2. Download all the files of the project from Github, and then place them under \xampp\htdocs.
