@@ -41,7 +41,7 @@
             header("Location: ../bls/ulib.php");
             exit();
         }
-        else if(isset($_POST['signup'])){
+        else if(isset($_POST['signup'])&&$gsid=="admin"){
             header("Location: ../bls/signup.php");
             exit();
         }

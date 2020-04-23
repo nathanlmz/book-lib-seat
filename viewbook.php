@@ -44,7 +44,8 @@
          $result = mysqli_query($conn, $selsql);
 
          if(!mysqli_num_rows($result)) {
-             echo "<p align='center'>You haven't booked any seat<br>";
+             echo "<p align='center' style='font-size:22px;font-family:arial;color:red;font-weight:bold;'>
+             You haven't booked any seat<br></p>";
          }
          else {
              // output data of each row
@@ -90,9 +91,12 @@
              echo "</table><br>";
          }
         // We include the codes of the buttons in php because we want to keep the sid
-        echo '<form method="post">
-                <button name="delbook">Cancel a booking</button>
-                <button name="floorplan">View Library Floorplan</button>
+        echo '<form method="post">';
+        if(mysqli_num_rows($result)){
+           echo'   <button name="delbook">Cancel a booking</button>';
+        }
+
+        echo'    <button name="floorplan">View Library Floorplan</button>
                 <button name="home">Return to homepage</button>
             </form>';
         // if(isset($_POST['viewbook'])){

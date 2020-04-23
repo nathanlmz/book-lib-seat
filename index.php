@@ -8,6 +8,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
             button:hover {background-color:#4B0082}
+            form button{
+                width:314px;
+            }
         </style>
     </head>
 

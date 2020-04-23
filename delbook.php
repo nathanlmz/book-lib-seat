@@ -162,7 +162,8 @@
          $result = mysqli_query($conn, $selsql);
 
          if(!mysqli_num_rows($result)) {
-             echo "<p align='center'>You haven't booked any seat<br>";
+             echo "<p align='center' style='color:red;font-size:22px;font-family:arial;font-weight:bold;'>
+             You haven't booked any seat<br>";
          }
          else {
              // output data of each row
@@ -207,26 +208,23 @@
              </tr>";
              }
              echo "</table><br>";
-         }
-        
-        echo '<form action="" method="POST">';
-        // echo '<p align="center" style="font-size:20px;">Which seat do you want to choose?</p>
-        // <input type="text" id="seat" name="seat" class="bs" placeholder="'.$area.'1-'.$area.'20"><br>';
-        echo '<p align="center" class="ques">Please insert the <font color="red">book ID</font> that you want to cancel</p>
-        <input type="text" id="delbook" name="delbook" clss="bs" style="width:404px;"><br>';
-        echo '<p align="center" style="font-size:20px;" class="ques">Please login again to confirm.</p><br>';
-                if(isset($_SESSION['sid'])){
-                    $psid = $_SESSION['sid'];
-                    echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$psid.'" class="bs"><br>';
-                }
-                else{
-                    echo '<input type="text" name="sid" placeholder="Student/Staff ID" class="bs"><br>';
-                }
-        echo '<input type="password" name="pwd" placeholder="Password" class="bs">
-            <br>
-            <button type="submit" name="login-submit" style="width:416px">Confirm</button>
-        </form>';
-        // We include the codes of the buttons in php because we want to keep the sid
+         
+            echo '<form action="" method="POST">';
+            echo '<p align="center" class="ques">Please insert the <font color="red">book ID</font> that you want to cancel</p>
+            <input type="text" id="delbook" name="delbook" clss="bs" style="width:404px;"><br>';
+            echo '<p align="center" style="font-size:20px;" class="ques">Please login again to confirm.</p><br>';
+                    if(isset($_SESSION['sid'])){
+                        $psid = $_SESSION['sid'];
+                        echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$psid.'" class="bs"><br>';
+                    }
+                    else{
+                        echo '<input type="text" name="sid" placeholder="Student/Staff ID" class="bs"><br>';
+                    }
+            echo '<input type="password" name="pwd" placeholder="Password" class="bs">
+                <br>
+                <button type="submit" name="login-submit" style="width:416px">Confirm</button>
+            </form>';
+        }
         echo '<form method="post">
                 <button name="floorplan" style="width:416px">View Library Floorplan</button>
                 <button name="home" style="width:416px">Return to homepage</button>
