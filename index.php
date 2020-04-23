@@ -25,7 +25,6 @@
                     echo '<input type="text" name="sid" placeholder="Student/Staff ID  eg. s1155xxxxxx"><br>';
                 }
             ?>
-
             <input type="password" name="pwd" placeholder="Password">
             <br>
             <button type="submit" name="login-submit">Log in</button>

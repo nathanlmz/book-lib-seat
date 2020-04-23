@@ -1,5 +1,9 @@
 <?php
-if (isset($_POST['signup-submit'])) {
+session_start();
+if(isset($_POST['return'])){
+  header("Location: ../home.php");
+}
+else if (isset($_POST['signup-submit'])) {
 
   // Include database connection script
   require 'bls.dbh.php';

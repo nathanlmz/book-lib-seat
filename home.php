@@ -27,8 +27,11 @@
     
     <?php
         // We include the codes of the buttons in php because we want to keep the sid
-        echo '<form method="post">
-                <button name="bookseat">Book a seat</button>
+        echo '<form method="post">';
+        if ($_SESSION['sid']=="admin"){
+            echo '<button name="signup">Add new accounts</button>';
+        }
+        echo   '<button name="bookseat">Book a seat</button>
                 <button name="viewbook">View my bookings</button>
                 <button name="floorplan">View Library Floorplan</button>
                 <button name="delbook">Cancel a booking</button>
@@ -36,6 +39,10 @@
             </form>';
         if (isset($_POST['bookseat'])) {
             header("Location: ../bls/ulib.php");
+            exit();
+        }
+        else if(isset($_POST['signup'])){
+            header("Location: ../bls/signup.php");
             exit();
         }
         else if(isset($_POST['viewbook'])){
