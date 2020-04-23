@@ -37,8 +37,14 @@
         $starttime = $_GET['starttime'];
         $endtime = $_GET['endtime'];
         $area = $_GET['area'];
-        $multiseatsql = "SELECT * FROM bookrecord WHERE sid='".$gsid."' AND bookdate='".$date."' AND ((starttime<='".$starttime."' AND endtime>='".$starttime."') OR (starttime<='".$endtime."' AND endtime>='".$endtime."') OR (starttime>='".$starttime."' AND endtime<='".$endtime."'))";
-        $multiseatresult = mysqli_query($conn, $multiseatsql);
+        $multiseatsql = "SELECT * FROM bookrecord WHERE sid=? AND bookdate=? AND ((starttime<=? AND endtime>=?) OR (starttime<=? AND endtime>=?) OR (starttime>=? AND endtime<=?))";
+        $stmt = mysqli_stmt_init($conn);
+        if(mysqli_stmt_prepare($stmt, $multiseatsql)){
+            mysqli_stmt_bind_param($stmt, "ssssssss", $gsid, $date, $starttime, $starttime,$endtime,$endtime,$starttime,$endtime);
+            mysqli_stmt_execute($stmt);
+            $multiseatresult = mysqli_stmt_get_result($stmt);
+        } 
+        mysqli_stmt_close($stmt);
         if(mysqli_num_rows($multiseatresult)){
             //If the user has already reserved a seat at the time slot, the webpage is refreshed, an error message is shown to ask the user to select another timeslot.
             header("Location: ../ulib/bookulib.php?area=".$area."&error=2");
@@ -115,16 +121,29 @@
               }
                 else if ($pwdCheck == true){    //if Password is correct
                     // Select the bookrecord from database to check whether the seat selected by user is occupied at the timeslot
-                    $checkseatsql = "SELECT * FROM bookrecord WHERE seatid='".$seat."' AND lib='".$lib."' AND bookdate='".$date."' AND ((starttime<='".$starttime."' AND endtime>='".$starttime."') OR (starttime<='".$endtime."' AND endtime>='".$endtime."') OR (starttime>='".$starttime."' AND endtime<='".$endtime."'))";
-                    $checkseatresult = mysqli_query($conn, $checkseatsql);
+                    $checkseatsql = "SELECT * FROM bookrecord WHERE seatid=? AND lib=? AND bookdate=? AND ((starttime<=? AND endtime>?) OR (starttime<=? AND endtime>=?) OR (starttime>=? AND endtime<=?))";
+                    $stmt = mysqli_stmt_init($conn);
+                    if(mysqli_stmt_prepare($stmt, $checkseatsql)){
+                        mysqli_stmt_bind_param($stmt, "sssssssss", $seat,$lib,$date,$starttime,$starttime,$endtime,$endtime,$starttime,$endtime);
+                        mysqli_stmt_execute($stmt);
+                        $checkseatresult = mysqli_stmt_get_result($stmt);
+                    } 
+                    mysqli_stmt_close($stmt);
                     if(mysqli_num_rows($checkseatresult)){
                         // Check whether the user has selected a seat which is already reserved. If yes, the webpage is refreshed, an error message will be shown.
                         header("Location: ../ulib/bookulib.php?area=".$area."&date=".$date."&starttime=".$starttime."&endtime=".$endtime."&error=1&submit=");
                         exit();
                     }
                     // Get the number of seat in the seat area selected by user
-                    $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`='".$area."' AND `lib`='".$lib."'";
-                    $seatresult = mysqli_query($conn, $areaseatsql);
+                    $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`=? AND `lib`=?";
+
+                    $stmt = mysqli_stmt_init($conn);
+                    if(mysqli_stmt_prepare($stmt, $areaseatsql)){
+                        mysqli_stmt_bind_param($stmt, "ss", $area,$lib);
+                        mysqli_stmt_execute($stmt);
+                        $seatresult = mysqli_stmt_get_result($stmt);
+                    }
+                    mysqli_stmt_close($stmt); 
                     $seatrow = mysqli_fetch_array($seatresult);
                     $seatnum = (int) filter_var($seat, FILTER_SANITIZE_NUMBER_INT); //Get the numerical part in seat id inputted by user for comparison
                     $seatchar = substr($seat,0,1);  //Get the first character of the seat id inputted by user into $seatchar
@@ -147,19 +166,31 @@
                     else {
                         //we start to reserve the seat for user and update the book record.
                         $_SESSION['sid'] = $row['sid'];
-                        $updsql = "INSERT INTO `bookrecord`(`sid`, `bookdate`, `starttime`, `endtime`, `seatid`, `area`, `lib`) VALUES ('".$usid."','".$date."','".$starttime."','".$endtime."','".$seat."','".$area."','".$lib."')";
+                        $updsql = "INSERT INTO `bookrecord`(`sid`, `bookdate`, `starttime`, `endtime`, `seatid`, `area`, `lib`) VALUES (?,?,?,?,?,?,?)";
                         $stmt = mysqli_stmt_init($conn);
                         if (mysqli_stmt_prepare($stmt, $updsql)){
-                            // mysqli_stmt_bind_param($stmt, "sssssss", $usid, $date, $starttime, $endtime, $seat);
+                            mysqli_stmt_bind_param($stmt, "sssssss", $usid,$date, $starttime, $endtime, $seat,$area,$lib);
                             mysqli_stmt_execute($stmt);
                         }
-                        $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$area."' AND `lib`='".$lib."'";
-                        $getfloorresult = mysqli_query($conn, $getfloorsql);
+                        $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`=? AND `lib`=?";
+                        $stmt = mysqli_stmt_init($conn);
+                        if (mysqli_stmt_prepare($stmt, $getfloorsql)){
+                            mysqli_stmt_bind_param($stmt, "ss", $area,$lib);
+                            mysqli_stmt_execute($stmt);
+                            $getfloorresult = mysqli_stmt_get_result($stmt);
+                        }
+                        mysqli_stmt_close($stmt);
                         $getfloorrow = mysqli_fetch_array($getfloorresult);
                         
                         //Send email to user
-                        $getmailsql = "SELECT `linkmail` FROM `accounts` WHERE `sid`='".$usid."'";  //Get the link email address from account database
-                        $getmailresult = mysqli_query($conn, $getmailsql);
+                        $getmailsql = "SELECT `linkmail` FROM `accounts` WHERE `sid`=?";  //Get the link email address from account database
+                        $stmt = mysqli_stmt_init($conn);
+                        if (mysqli_stmt_prepare($stmt, $getmailsql)){
+                            mysqli_stmt_bind_param($stmt, "s", $usid);
+                            mysqli_stmt_execute($stmt);
+                            $getmailresult = mysqli_stmt_get_result($stmt);
+                        }
+                        mysqli_stmt_close($stmt);
                         $getmailrow = mysqli_fetch_array($getmailresult);
                         require_once('mail.include.php');
                         $mail->addAddress($getmailrow['linkmail']);
@@ -234,27 +265,6 @@
                 font-size: 20px;
                 font-family: arial;
             }
-            .bs{
-                display: block;
-                width: 404px;
-                height: 45px;
-                margin: auto;
-                border-color: purple;
-                border-width: 1px;
-                border-radius: 4px;
-                font-family: Arial;
-                color: black;
-                font-weight: bold;
-                font-size: 16px;
-                text-align: left;
-                padding-left: 10px;
-            }
-            .info{
-                text-align: center;
-                align-items: center;
-                font-size: 16px;
-                font-family: arial;
-            }
             table, th, td {
                 border: 1px solid black;
                 border-collapse: collapse;
@@ -320,13 +330,13 @@
             if(!isset($_GET['submit'])){
                 echo '<form method="GET">
                     <p align="center" class="ques">Seat Area</p>
-                    <input type="text" class="bs" id="area" name="area" value="'.$area.'">
+                    <input type="text" id="area" name="area" value="'.$area.'">
                     <p align="center" class="ques">Which day do you want to have the seat?</p>
-                    <input type="date" class="bs" id="date" name="date" placeholder="Date: YYYY-MM-DD">
+                    <input type="date" id="date" name="date" placeholder="Date: YYYY-MM-DD">
                     <p align="center" class="ques">When will you start using the seat?</p>
-                    <input type="time" class="bs" id="starttime" name="starttime">
+                    <input type="time" id="starttime" name="starttime">
                     <p align="center" class="ques">When will you leave the seat?</p>
-                    <input type="time" class="bs" id="endtime" name="endtime">
+                    <input type="time" id="endtime" name="endtime">
                     <br><button type="submit" name="submit">Submit</button>
                 </form>
                 ';
@@ -349,12 +359,27 @@
                 echo '</table>';
                 
                 
-                $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`='".$area."' AND `lib`='".$lib."'";
-                $seatresult = mysqli_query($conn, $areaseatsql);
+                // $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`='".$area."' AND `lib`='".$lib."'";
+                $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`=? AND `lib`=?";
+                $stmt = mysqli_stmt_init($conn);
+                if(mysqli_stmt_prepare($stmt, $areaseatsql)){
+                    mysqli_stmt_bind_param($stmt, "ss",$area,$lib);
+                    mysqli_stmt_execute($stmt);
+                    $seatresult = mysqli_stmt_get_result($stmt);
+                } 
+                mysqli_stmt_close($stmt);
+                
+                // $seatresult = mysqli_query($conn, $areaseatsql);
                 $seatrow = mysqli_fetch_array($seatresult);
 
-                $selsql = "SELECT seatid FROM bookrecord WHERE lib='".$lib."'AND area='".$area."' AND bookdate='".$date."' AND ((starttime<='".$starttime."' AND endtime>='".$starttime."') OR (starttime<='".$endtime."' AND endtime>='".$endtime."') OR (starttime>='".$starttime."' AND endtime<='".$endtime."')) ORDER BY length(seatid) ASC, seatid ASC;";
-                $result = mysqli_query($conn, $selsql);
+                $selsql = "SELECT seatid FROM bookrecord WHERE lib=? AND area=? AND bookdate=? AND ((starttime<=? AND endtime>?) OR (starttime<=? AND endtime>=?) OR (starttime>=? AND endtime<=?)) ORDER BY length(seatid) ASC, seatid ASC;";
+                $stmt = mysqli_stmt_init($conn);
+                if(mysqli_stmt_prepare($stmt, $selsql)){
+                    mysqli_stmt_bind_param($stmt, "sssssssss",$lib,$area,$date,$starttime,$starttime,$endtime, $endtime,$starttime,$endtime);
+                    mysqli_stmt_execute($stmt);
+                    $result = mysqli_stmt_get_result($stmt);
+                } 
+                mysqli_stmt_close($stmt);
 
                 if(!mysqli_num_rows($result)) {
                     echo "<p align='center' style='font-size:18px;font-family:arial;'>There is no seat booked<br>
@@ -385,17 +410,17 @@
             if(isset($_GET['submit'])){
                 echo '<form action="" method="POST">';
                 echo '<p align="center" style="font-size:20px;">Which seat do you want to choose?</p>
-                <input type="text" id="seat" name="seat" class="bs" placeholder="'.$area.'1-'.$area.$seatrow['seatnum'].'"><br>';
+                <input type="text" id="seat" name="seat" placeholder="'.$area.'1-'.$area.$seatrow['seatnum'].'"><br>';
                 echo '<p align="center" style="font-size:20px;">Please login again to confirm the booking.</p><br>';
                         if(isset($_SESSION['sid'])){
-                            echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$_SESSION['sid'].'" class="bs"><br>';
+                            echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$_SESSION['sid'].'"><br>';
                         }
                         else{
-                            echo '<input type="text" name="sid" placeholder="Student/Staff ID" class="bs"><br>';
+                            echo '<input type="text" name="sid" placeholder="Student/Staff ID"><br>';
                         }
                     
 
-                echo '<input type="password" name="pwd" placeholder="Password" class="bs">
+                echo '<input type="password" name="pwd" placeholder="Password">
                     <br>
                     <button type="submit" name="login-submit" style="width:416px">Confirm</button>
                 </form>';

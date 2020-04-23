@@ -40,9 +40,15 @@
     </p>
     <?php
          $gsid = $_SESSION['sid'];
-         $selsql = "SELECT bookdate, starttime, endtime, lib, area, seatid FROM bookrecord WHERE sid='".$gsid."' AND bookdate>=CURRENT_DATE() ORDER BY bookdate ASC";
-         $result = mysqli_query($conn, $selsql);
-
+         $selsql = "SELECT bookdate, starttime, endtime, lib, area, seatid FROM bookrecord WHERE sid=? AND bookdate>=CURRENT_DATE() ORDER BY bookdate ASC";
+         
+         $stmt = mysqli_stmt_init($conn);
+         if(mysqli_stmt_prepare($stmt, $selsql)){
+            mysqli_stmt_bind_param($stmt, "s", $gsid);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+        } 
+        
          if(!mysqli_num_rows($result)) {
              echo "<p align='center' style='font-size:22px;font-family:arial;color:red;font-weight:bold;'>
              You haven't booked any seat<br></p>";
@@ -60,11 +66,18 @@
                  <th>To</th>
              </tr>'; 
              while($row = mysqli_fetch_assoc($result)) {
-                 // echo "<br> id: ". $row["id"]. " - Name: ". $row["firstname"]. " " . $row["lastname"] . "<br>";
-                $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$row['area']."' AND `lib`='".$row['lib']."'";
-                $getfloorresult = mysqli_query($conn, $getfloorsql);
+                $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`=? AND `lib`=?";
+                
+                $stmt = mysqli_stmt_init($conn);
+                if(mysqli_stmt_prepare($stmt, $getfloorsql)){
+                   mysqli_stmt_bind_param($stmt, "ss", $row['area'], $row['lib']);
+                   mysqli_stmt_execute($stmt);
+                   $getfloorresult = mysqli_stmt_get_result($stmt);
+               } 
+                
+                // $getfloorresult = mysqli_query($conn, $getfloorsql);
                 $getfloorrow = mysqli_fetch_array($getfloorresult);
-                 
+                mysqli_stmt_close($stmt);
                  echo "<tr>";
                  $library=$row['lib'];
                  if($library=="ulib"){
@@ -93,16 +106,12 @@
         // We include the codes of the buttons in php because we want to keep the sid
         echo '<form method="post">';
         if(mysqli_num_rows($result)){
-           echo'   <button name="delbook">Cancel a booking</button>';
+           echo'<button name="delbook">Cancel a booking</button>';
         }
 
-        echo'    <button name="floorplan">View Library Floorplan</button>
-                <button name="home">Return to homepage</button>
-            </form>';
-        // if(isset($_POST['viewbook'])){
-        //     header("Location: ../bls/viewbook.php?sid=".$gsid);
-        //     exit();
-        // }
+        echo'<button name="floorplan">View Library Floorplan</button>
+            <button name="home">Return to homepage</button>
+        </form>';
         if(isset($_POST['delbook'])){
             header("Location: ../bls/delbook.php");
             exit();

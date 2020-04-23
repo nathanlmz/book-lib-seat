@@ -101,7 +101,7 @@
         else if(isset($_GET['cclib'])){
             if (isset($_POST['ccfirst'])) {   //If "2nd Floor" is pressed
                 echo '<p class="chooselib">Chung Chi College Library - 1/F</p>';
-                echo '<img src="ulib/cclib_1F.png" class="center">';     // Show the floorplan of the 2nd floor
+                echo '<img src="ulib/cclib_1F.png" class="center" style="max-height:460px;">';     // Show the floorplan of the 2nd floor
                 echo '<form method="post"><button name="ccsecond">2nd Floor</button></form>';
             }
             else if (isset($_POST['ccsecond'])) {   //If "2nd Floor" is pressed

@@ -5,20 +5,20 @@
         header("Location: ../bls/index.php");
         exit();
     }
-    $gsid = $_SESSION['sid'];
-    ob_start();
+    $gsid = $_SESSION['sid'];   // Get sid from SESSION
+    ob_start();     //Enable output buffering
     require 'includes/bls.dbh.php'; // Include the database connection script file
 
     if (isset($_POST['login-submit'])) {
 
-        // Get sid, password and book id.
+        // Get sid, password and book id from POST.
         $usid = $_POST['sid'];
         $password = $_POST['pwd'];
         $bid = $_POST['delbook'];
       
         // Check whether there exist empty input or not.
         if (empty($usid) || empty($password)|| empty($bid)) {
-          header("Location: ../bls/delbook.php?error=empty");
+          header("Location: ../bls/delbook.php?error=empty");   //If any field is empty, show an error message to notice the user.
           exit();
         }
         else {
@@ -33,9 +33,6 @@
             exit();
           }
           else {
-      
-            // If there is no error then continue
-      
             // Bind the type of parameters we expect to pass into the statement, and bind the data from the user.
             mysqli_stmt_bind_param($stmt, "s", $usid);
             // Execute the prepared statement and send it to the database
@@ -54,28 +51,36 @@
               }
                 else if ($pwdCheck == true){    // If password is correct, we continue and execute the codes below
                     // We check whether the bookid inputted by the user exists or not, and whether it is booked by the user.
-                    $checkseatsql = "SELECT * FROM bookrecord WHERE bookid='".$bid."' AND sid='".$usid."'";
-                    $checkseatresult = mysqli_query($conn, $checkseatsql);
-
-                    
-                    if(!mysqli_num_rows($checkseatresult)){
+                    // $checkseatsql = "SELECT * FROM bookrecord WHERE bookid='".$bid."' AND sid='".$usid."'";
+                    $checkseatsql = "SELECT * FROM bookrecord WHERE bookid=? AND sid=?";
+                    if(mysqli_stmt_prepare($stmt, $checkseatsql)){
+                        mysqli_stmt_bind_param($stmt, "is", $bid, $usid);
+                        mysqli_stmt_execute($stmt);
+                        $checkseatresult = mysqli_stmt_get_result($stmt);
+                    }   else{
                         // If the bookid is invalid (The bookid doesn't exist or the bookid is refers to the booking by other users)
                         // We add error id into the url link, and then an error message will be printed
                         header("Location: ../bls/delbook.php?error=1");
                     }
-                    else {
+
+                    if($row = mysqli_fetch_assoc($checkseatresult)) {
                         session_start();
-                        // Create the session variables.
                         $_SESSION['sid'] = $row['sid'];
                         // Delete the book record selected by user
-                        $updsql = "DELETE FROM `bookrecord` WHERE bookid='".$bid."' AND sid='".$usid."'";
+                        $updsql = "DELETE FROM `bookrecord` WHERE bookid=? AND sid=?";
                         $stmt = mysqli_stmt_init($conn);
                         if (mysqli_stmt_prepare($stmt, $updsql)){
+                            mysqli_stmt_bind_param($stmt, "is", $bid, $usid);
                             mysqli_stmt_execute($stmt);
                         }
                         // After delected the record, it returns to the same webpage, but the booking record shown is updated.
                         header("Location: ../bls/delbook.php");
                         exit();
+                    }
+                    else {
+                        // If the bookid is invalid (The bookid doesn't exist or the bookid is refers to the booking by other users)
+                        // We add error id into the url link, and then an error message will be printed
+                        header("Location: ../bls/delbook.php?error=1");
                     }
                     
               }
@@ -117,21 +122,6 @@
                 font-size: 20px;
                 font-family: arial;
         }
-        .bs{
-                display: block;
-                width: 404px;
-                height: 45px;
-                margin: auto;
-                border-color: purple;
-                border-width: 1px;
-                border-radius: 4px;
-                font-family: Arial;
-                color: black;
-                font-weight: bold;
-                font-size: 16px;
-                text-align: left;
-                padding-left: 10px;
-        }
     </style>
 </head>
 
@@ -158,9 +148,14 @@
             My booking record
             </p>';
          $gsid = $_SESSION['sid'];
-         $selsql = "SELECT bookid, bookdate, starttime, endtime, lib, area, seatid FROM bookrecord WHERE sid='".$gsid."' AND bookdate>=CURRENT_DATE() ORDER BY bookdate ASC";
-         $result = mysqli_query($conn, $selsql);
-
+         $selsql = "SELECT bookid, bookdate, starttime, endtime, lib, area, seatid FROM bookrecord WHERE sid=? AND bookdate>=CURRENT_DATE() ORDER BY bookdate ASC";
+         $stmt = mysqli_stmt_init($conn);
+         if(mysqli_stmt_prepare($stmt, $selsql)){
+            mysqli_stmt_bind_param($stmt, "s", $gsid);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+        } 
+         mysqli_stmt_close($stmt);
          if(!mysqli_num_rows($result)) {
              echo "<p align='center' style='color:red;font-size:22px;font-family:arial;font-weight:bold;'>
              You haven't booked any seat<br>";
@@ -211,23 +206,23 @@
          
             echo '<form action="" method="POST">';
             echo '<p align="center" class="ques">Please insert the <font color="red">book ID</font> that you want to cancel</p>
-            <input type="text" id="delbook" name="delbook" clss="bs" style="width:404px;"><br>';
+            <input type="text" id="delbook" name="delbook" style="width:404px;"><br>';
             echo '<p align="center" style="font-size:20px;" class="ques">Please login again to confirm.</p><br>';
                     if(isset($_SESSION['sid'])){
                         $psid = $_SESSION['sid'];
-                        echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$psid.'" class="bs"><br>';
+                        echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$psid.'"><br>';
                     }
                     else{
-                        echo '<input type="text" name="sid" placeholder="Student/Staff ID" class="bs"><br>';
+                        echo '<input type="text" name="sid" placeholder="Student/Staff ID"><br>';
                     }
-            echo '<input type="password" name="pwd" placeholder="Password" class="bs">
+            echo '<input type="password" name="pwd" placeholder="Password">
                 <br>
-                <button type="submit" name="login-submit" style="width:416px">Confirm</button>
+                <button type="submit" name="login-submit">Confirm</button>
             </form>';
         }
         echo '<form method="post">
-                <button name="floorplan" style="width:416px">View Library Floorplan</button>
-                <button name="home" style="width:416px">Return to homepage</button>
+                <button name="floorplan">View Library Floorplan</button>
+                <button name="home">Return to homepage</button>
             </form>';
         if(isset($_POST['home'])){
             header("Location: ../bls/home.php");

@@ -25,7 +25,7 @@ header {
 
 button{
     display: block;
-    width: 404px;
+    width: 414px;
     margin: auto;
     background-color: purple;
     color: #FFF;
@@ -42,8 +42,8 @@ button{
 button:hover {background-color:#4B0082}
 form input{
     display: block;
-    width: 404px;
-    height: 45px;
+    width: 400px;
+    height: 40px;
     margin: auto;
     border-color: purple;
     border-width: 1px;
@@ -51,7 +51,8 @@ form input{
     font-family: Arial;
     color: black;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 17px;
     text-align: left;
+    padding-left: 10px;
     
 }

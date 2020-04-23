@@ -33,7 +33,7 @@
         Please choose an bookable seat area
         <br>
     </p>
-    <img src="cclib_1F.png" class="center">
+    <img src="cclib_1F.png" class="center" style="max-height:460px;">
     <?php
         echo '<form method="post">
             <button name="area_a">Seat area A</button>
