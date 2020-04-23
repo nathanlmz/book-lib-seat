@@ -37,6 +37,7 @@
         $starttime = $_GET['starttime'];
         $endtime = $_GET['endtime'];
         $area = $_GET['area'];
+
         $multiseatsql = "SELECT * FROM bookrecord WHERE sid=? AND bookdate=? AND ((starttime<=? AND endtime>=?) OR (starttime<=? AND endtime>=?) OR (starttime>=? AND endtime<=?))";
         $stmt = mysqli_stmt_init($conn);
         if(mysqli_stmt_prepare($stmt, $multiseatsql)){
@@ -45,6 +46,7 @@
             $multiseatresult = mysqli_stmt_get_result($stmt);
         } 
         mysqli_stmt_close($stmt);
+
         if(mysqli_num_rows($multiseatresult)){
             //If the user has already reserved a seat at the time slot, the webpage is refreshed, an error message is shown to ask the user to select another timeslot.
             header("Location: ../ulib/bookulib.php?area=".$area."&error=2");
@@ -55,8 +57,24 @@
             header("Location: ../ulib/bookulib.php?error=empty&area=".$area);
             exit();
         }
-
-        if($date <  date("Y-m-d")){
+        $day = date("N", strtotime($date));
+        if($day == 7){
+            if($starttime < "12:59:59"){
+                header("Location: ../ulib/bookulib.php?area=".$area."&error=open");
+            }
+            else if($endtime > "19:00:00"){
+                header("Location: ../ulib/bookulib.php?area=".$area."&error=closed");
+            }
+        }
+        else if($day == 6){
+            if($starttime < "08:19:59"){  //Check whether the library is opened before the time that the user seleted
+                header("Location: ../ulib/bookulib.php?area=".$area."&error=open");
+            }
+            else if($endtime > "19:00:00"){ //Check whether the library is closed before the user leave
+                header("Location: ../ulib/bookulib.php?area=".$area."&error=closed");
+            }
+        }
+        else if($date <  date("Y-m-d")){
             // If the date chosen by user is already passed, reload the page and print error message.
             header("Location: ../ulib/bookulib.php?area=".$area."&error=date");
         }
@@ -68,6 +86,35 @@
             // If start time is greater than end time, the input is invalid, reload the page, and print error message.
             header("Location: ../ulib/bookulib.php?area=".$area."&error=time");
         }
+        else if($starttime < "08:19:59"){
+            header("Location: ../ulib/bookulib.php?area=".$area."&error=open");
+        }
+        else if($endtime > "22:00:00"){
+            header("Location: ../ulib/bookulib.php?area=".$area."&error=closed");
+        }
+        // Check whether the library is closed on that day, or any special arrangement in open time
+        $closedaysql = "SELECT * FROM closeday WHERE closedate=?";
+        $stmt = mysqli_stmt_init($conn);
+        if(mysqli_stmt_prepare($stmt, $closedaysql)){
+            mysqli_stmt_bind_param($stmt, "s", $date);
+            mysqli_stmt_execute($stmt);
+            $closedayresult = mysqli_stmt_get_result($stmt);
+        } 
+        mysqli_stmt_close($stmt);
+        if($closedayrow = mysqli_fetch_array($closedayresult)){
+            if($closedayrow['closetime']<"08:19:59"){   //If the closetime is smaller than 8:20, it means the library is closed for the whole day.
+                header("Location: ../ulib/bookulib.php?area=".$area."&error=closeday");
+            }
+            //If the close time is greater than 8:20, it is considered as a day with special arrangement in open time.
+            else if($endtime > $closedayrow['closetime']){  //Check whether the library is closed before the user leave
+                header("Location: ../ulib/bookulib.php?area=".$area."&error=closed");
+            }
+            else if($starttime < $closedayrow['opentime']){ //Check whether the library is opened before the time that the user seleted
+                header("Location: ../ulib/bookulib.php?area=".$area."&error=open");
+            }
+        }
+
+
     }
     if (isset($_POST['login-submit'])) {
 
@@ -323,6 +370,15 @@
                 else if($errortype == "sidinvalid"){
                     echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">Student/staff id invalid!</h1>';
                 }
+                else if($errortype == "closed"){
+                    echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The library is closed during the timeslot you seleted!</h1>';
+                }
+                else if($errortype == "open"){
+                    echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The library is not opened yet!</h1>';
+                }
+                else if($errortype == "closeday"){
+                    echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The library is closed on that day!</h1>';
+                }
             }
             if(isset($_GET['area'])){
                 $area = $_GET['area'];
@@ -359,7 +415,6 @@
                 echo '</table>';
                 
                 
-                // $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`='".$area."' AND `lib`='".$lib."'";
                 $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`=? AND `lib`=?";
                 $stmt = mysqli_stmt_init($conn);
                 if(mysqli_stmt_prepare($stmt, $areaseatsql)){
