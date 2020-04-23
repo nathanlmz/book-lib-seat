@@ -371,7 +371,7 @@
                     echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">Student/staff id invalid!</h1>';
                 }
                 else if($errortype == "closed"){
-                    echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The library is closed during the timeslot you seleted!</h1>';
+                    echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The library is closed in the timeslot you seleted!</h1>';
                 }
                 else if($errortype == "open"){
                     echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The library is not opened yet!</h1>';
