@@ -206,16 +206,16 @@
          
             echo '<form action="" method="POST">';
             echo '<p align="center" class="ques">Please insert the <font color="red">book ID</font> that you want to cancel</p>
-            <input type="text" id="delbook" name="delbook" style="width:404px;"><br>';
+            <input type="text" id="delbook" name="delbook" style="width:400px;"><br>';
             echo '<p align="center" style="font-size:20px;" class="ques">Please login again to confirm.</p><br>';
                     if(isset($_SESSION['sid'])){
                         $psid = $_SESSION['sid'];
-                        echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$psid.'"><br>';
+                        echo '<input type="text" name="sid" placeholder="Student/Staff ID" style="width:400px;" value="'.$psid.'"><br>';
                     }
                     else{
-                        echo '<input type="text" name="sid" placeholder="Student/Staff ID"><br>';
+                        echo '<input type="text" name="sid" placeholder="Student/Staff ID" style="width:400px;"><br>';
                     }
-            echo '<input type="password" name="pwd" placeholder="Password">
+            echo '<input type="password" name="pwd" placeholder="Password" style="width:400px;">
                 <br>
                 <button type="submit" name="login-submit">Confirm</button>
             </form>';
