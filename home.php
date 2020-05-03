@@ -5,6 +5,7 @@
         header("Location: ../bls/index.php");
         exit();
     }
+    // Get user's SID from SESSION.
      $gsid = $_SESSION['sid'];
 ?>
 
@@ -27,10 +28,8 @@
     
     <?php
         // We include the codes of the buttons in php because we want to keep the sid
+        // Show the buttons required for the homepage.
         echo '<form method="post">';
-        if ($_SESSION['sid']=="admin"){
-            echo '<button name="signup">Add new accounts</button>';
-        }
         echo   '<button name="bookseat">Book a seat</button>
                 <button name="viewbook">View my bookings</button>
                 <button name="floorplan">View Library Floorplan</button>
@@ -38,26 +37,28 @@
                 <button name="logout">Log out</button>
             </form>';
         if (isset($_POST['bookseat'])) {
+            // If the button "Book a seat" is pressed, we direct it to ulib.php which is the first page required to book a seat.
             header("Location: ../bls/ulib.php");
             exit();
         }
-        else if(isset($_POST['signup'])&&$gsid=="admin"){
-            header("Location: ../bls/signup.php");
-            exit();
-        }
         else if(isset($_POST['viewbook'])){
+            // If the button "View my bookings" is pressed, it will be directed to viewbook.php.
             header("Location: ../bls/viewbook.php");
             exit();
         }
         else if(isset($_POST['floorplan'])){
+            // If the button "View Libray Floorplan" is pressed, it will be directed to floorplan.php.
             header("Location: ../bls/floorplan.php");
             exit();
         }
         else if(isset($_POST['delbook'])){
+            // If the button "Cancel a booking" is pressed, it will be directed to delbook.php.
             header("Location: ../bls/delbook.php");
             exit();
         }
         else if(isset($_POST['logout'])){
+            // If the button "Log out" is pressed, the session value will be cleared, and the connection to database will be closed,
+            // And then it jumps to the login page.
             session_unset();
             session_destroy(); 
             mysqli_close($conn);

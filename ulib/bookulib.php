@@ -331,8 +331,11 @@
         <header><h1 class="title">Book Lib Seat</h1></header>
         <br>
         <?php
+            // Check whether there exist error id in the url
             if(isset($_GET['error'])){
+                // If error id exist, we get the error id from the link and pass it into $errortype
                 $errortype = $_GET['error'];
+                // The if-else statements below check the error id. and then show the corresponding error message to notify the user.
                 if($errortype == 1){
                     echo '<h1 style="text-align:center;font-family:arial;font-size:24px;color:red;">The seat you selected is NOT AVAILABLE!</h1>
                     <h2 style="color:red;text-align:center;font-size:16px;font-family:arial;">Please select another seat</h2>';
@@ -381,9 +384,11 @@
                 }
             }
             if(isset($_GET['area'])){
+                // If there exist 'area' id on the url, pass the area id into the variable $area
                 $area = $_GET['area'];
             }
             if(!isset($_GET['submit'])){
+                // If the 'submit' button is not clicked, show the following fields and button, so as to let the users to input the date and time of booking
                 echo '<form method="GET">
                     <p align="center" class="ques">Seat Area</p>
                     <input type="text" id="area" name="area" value="'.$area.'">
@@ -396,8 +401,10 @@
                     <br><button type="submit" name="submit">Submit</button>
                 </form>
                 ';
+                // Show the button to let the user return previous page. 
                 echo '<form method="POST"><button name="return">Return to previous page</button></form>';
                 if(isset($_POST['return'])){
+                    // If the "Return to previous page" button is clicked, it redirects to ulib.php
                         header("Location: ../ulib.php");
                         exit();
                     
@@ -406,16 +413,18 @@
         ?>
         <?php
             if(isset($_GET['submit'])){
+                // If the 'submit' button is clicked (the button for submiting the date, time of booking)
+                // Show the library, area, date and time that the user selected
                 echo '<table style="font-size:22px;margin-left:auto;margin-right:auto;border-collapse: collapse;text-align:left;width:auto;">';
                 echo '<tr><th>Library</th><td>'.$libmessage.'</td></tr>';
                 echo '<tr><th>Area</th><td>'.$area.'</td></tr>';
                 echo '<tr><th>Date</th><td>'.$date.'</td></tr>';
                 echo '<tr><th>Time</th><td>'.$starttime.'  to  '.$endtime.'</td></tr>';
-                // echo '<tr><th style="padding-right: 15px;">end time:</th><td>'.$endtime.'</td></tr>';
                 echo '</table>';
                 
-                
+                // Get the number of seats un the seat area chosen by user
                 $areaseatsql = "SELECT `seatnum` FROM `areainfo` WHERE `area`=? AND `lib`=?";
+                // Use prepared statement to access and get data from database.
                 $stmt = mysqli_stmt_init($conn);
                 if(mysqli_stmt_prepare($stmt, $areaseatsql)){
                     mysqli_stmt_bind_param($stmt, "ss",$area,$lib);
@@ -423,10 +432,10 @@
                     $seatresult = mysqli_stmt_get_result($stmt);
                 } 
                 mysqli_stmt_close($stmt);
-                
-                // $seatresult = mysqli_query($conn, $areaseatsql);
+                // Pass the result fetched from database into $seatrow
                 $seatrow = mysqli_fetch_array($seatresult);
 
+                // Get the seat ids of the seats reserved during the timeslot that the user selected.
                 $selsql = "SELECT seatid FROM bookrecord WHERE lib=? AND area=? AND bookdate=? AND ((starttime<=? AND endtime>?) OR (starttime<=? AND endtime>=?) OR (starttime>=? AND endtime<=?)) ORDER BY length(seatid) ASC, seatid ASC;";
                 $stmt = mysqli_stmt_init($conn);
                 if(mysqli_stmt_prepare($stmt, $selsql)){
@@ -437,13 +446,14 @@
                 mysqli_stmt_close($stmt);
 
                 if(!mysqli_num_rows($result)) {
+                    // If the result is empty, print the following message.
                     echo "<p align='center' style='font-size:18px;font-family:arial;'>There is no seat booked<br>
                     You can choose <font color='red' style='font-size:24px;'>ANY</font> seat in this area with seat id 
                     <font color='red' style='font-size:24px;'>".$area."1-".$area."".$seatrow['seatnum'];
                     echo "</font>";
                 }
                 else {
-                    // output data of each row
+                    // If the result is not empty (some seats are reserved), print the following message, and the seat id of the seats reserved by the others.
                     echo "<p align='center' style='font-size:24px'>Seat(s) reserved:<br>";
                     echo "<font align='center' style='font-size:28px;color:indigo;font-family:calibri;font-weight:bold;'>" ;
                     while($row = mysqli_fetch_assoc($result)) {
@@ -463,24 +473,27 @@
 
         <?php
             if(isset($_GET['submit'])){
+                // If the submit button is clicked, we also show the following message, and input fields to allow the user to input a seat id.
                 echo '<form action="" method="POST">';
                 echo '<p align="center" style="font-size:20px;">Which seat do you want to choose?</p>
                 <input type="text" id="seat" name="seat" placeholder="'.$area.'1-'.$area.$seatrow['seatnum'].'"><br>';
                 echo '<p align="center" style="font-size:20px;">Please login again to confirm the booking.</p><br>';
-                        if(isset($_SESSION['sid'])){
-                            echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$_SESSION['sid'].'"><br>';
-                        }
-                        else{
-                            echo '<input type="text" name="sid" placeholder="Student/Staff ID"><br>';
-                        }
-                    
-
+                
+                // the input fields for password and sid are also shown, let the user to login again, to confirm booking.
+                if(isset($_SESSION['sid'])){
+                    echo '<input type="text" name="sid" placeholder="Student/Staff ID" value="'.$_SESSION['sid'].'"><br>';
+                }
+                else{
+                    echo '<input type="text" name="sid" placeholder="Student/Staff ID"><br>';
+                }
                 echo '<input type="password" name="pwd" placeholder="Password">
                     <br>
                     <button type="submit" name="login-submit" style="width:416px">Confirm</button>
                 </form>';
+                // The button "Return to previous page" is also provided
                 echo '<form method="POST"><button name="return" style="width:416px">Return to previous page</button></form>';
                 if(isset($_POST['return'])){
+                    // If the button "Return to previous page" is clicked, it redirects to bookulib.php with the area id on the link.
                     header("Location: ../ulib/bookulib.php?area=".$area);
                     exit();
                 }

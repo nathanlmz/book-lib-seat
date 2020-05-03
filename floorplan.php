@@ -5,6 +5,7 @@
         header("Location: ../bls/index.php");
         exit();
     }
+    // Get sid from SESSION
     $gsid = $_SESSION['sid'];
 ?>
 <!DOCTYPE html>
@@ -32,6 +33,7 @@
     <?php
         $gsid = $_SESSION['sid'];   //Get sid
         if((!isset($_GET['ulib']))&&(!isset($_GET['uclib']))&&(!isset($_GET['cclib']))){
+            // If the the button "ulib", "uclib" and "cclib" are not clicked, we show these buttons.
             echo '<h1 class="chooselib" style="font-size:36px;color:indigo;">Library Floorplan</h1>';
             echo '<p class="chooselib" style="font-size:24px;">
             Please choose a library
@@ -45,8 +47,8 @@
             </form>';
         }
         else if(isset($_GET['ulib'])){
-            
-            if (isset($_POST['second'])) {   //If "2nd Floor" is pressed
+            // If the button 'ulib' is clicked
+            if (isset($_POST['second'])) {   //If "2nd Floor" is pressed,
                 echo '<p class="chooselib">University Library - 2/F</p>';
                 echo '<img src="ulib/ulib_2F.png" class="center">';     // Show the floorplan of the 2nd floor
                 echo '<form method="post" action="">
@@ -71,6 +73,7 @@
                  </form>';
             }
             else{
+                // If the button 'ulib' is clicked, but the buttons of the floors are not clicked, we show the buttons of each floor of the university library.
                 echo '<p class="chooselib">
                 University Library
                 <br></p>';
@@ -90,6 +93,7 @@
                 //exit();
             }
             else{
+                // If "2nd floor" is not clicked, we show this button
                 echo '<p class="chooselib">
                 United College Library
                 <br></p>';
@@ -99,7 +103,7 @@
             
         }
         else if(isset($_GET['cclib'])){
-            if (isset($_POST['ccfirst'])) {   //If "2nd Floor" is pressed
+            if (isset($_POST['ccfirst'])) {   //If "1st Floor" is pressed
                 echo '<p class="chooselib">Chung Chi College Library - 1/F</p>';
                 echo '<img src="ulib/cclib_1F.png" class="center" style="max-height:460px;">';     // Show the floorplan of the 2nd floor
                 echo '<form method="post"><button name="ccsecond">2nd Floor</button></form>';
@@ -110,6 +114,7 @@
                 echo '<form method="post"><button name="ccfirst">1st Floor</button></form>';
             }
             else{
+                // If the button "2nd Floor" and "1st Floor" are not clicked, we show these buttons.
                 echo '<p class="chooselib">
                 Chung Chi College Library
                 <br></p>';

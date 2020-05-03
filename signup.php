@@ -47,27 +47,30 @@ form input{
         
       }
       // Here we create a success message if the new user was created.
-      else if (isset($_GET["signup"])) {
-        if ($_GET["signup"] == "success") {
-          echo '<p class="success">Signup successful!</p>';
-        }
-      }
+      // else if (isset($_GET["signup"])) {
+      //   if ($_GET["signup"] == "success") {
+      //     echo '<p class="success">Signup successful!</p>';
+      //   }
+      // }
       ?>
       <form action="includes/signup.inc.php" method="post">
         <?php
-        // We check username.
+        // Here, we check whethet there exist 'sid' from the url or not
         if (!empty($_GET["sid"])) {
+          // If there exist 'sid' from the url, we show a 'sid' field with the sid contained.
           echo '<input type="text" name="sid" placeholder="Username" value="'.$_GET["sid"].'"><br>';
         }
         else {
+          // If there doesn't exist 'sid' from the url, we just show a 'sid' input field without sid contained.
           echo '<input type="text" name="sid" placeholder="Username"><br>';
         }
 
-        // We check e-mail.
         if (!empty($_GET["mail"])) {
+          //  If there exist 'email' from the url, we show a 'email' field with the email contained.
           echo '<input type="text" name="mail" placeholder="E-mail" value="'.$_GET["mail"].'"><br>';
         }
         else {
+          // If there doesn't exist 'email' from the url, we just show a 'email' input field without email contained.
           echo '<input type="text" name="mail" placeholder="E-mail"><br>';
         }
         ?>

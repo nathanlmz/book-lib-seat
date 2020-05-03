@@ -1,9 +1,9 @@
 <?php
-// Here we check whether the user got to this page by clicking the proper login button.
+// Here we check whether the user got to this page by clicking the login button.
 if (isset($_POST['login-submit'])) {
   // Include the database connection script file
   require 'bls.dbh.php';
-  // Grab sid and password for chekcing.
+  // Get sid and password for chekcing.
   $usid = $_POST['sid'];
   $password = $_POST['pwd'];
 
@@ -42,13 +42,19 @@ if (isset($_POST['login-submit'])) {
           session_start();
           // Create the session variables.
           $_SESSION['sid'] = $row['sid'];
-          //header("Location: ../index.php?login=success");
-          header("Location: ../home.php");
-          exit();
+
+          if($_SESSION['sid']=="admin"){  //If the 'sid' is "admin", we go to the admin home page
+            header("Location: ../admin_home.php");
+          }
+          else{ //If the 'sid' is not "admin", we go to the normal homepage
+            header("Location: ../home.php");
+            exit();
+          }
+            
         }
       }
-      else {
-        header("Location: ../index.php?error=wronguidpwd");
+      else {  // If the sid inputted by user is not found in database, we display an error message to show that the account doesn't exist
+        header("Location: ../index.php?error=sidinvalid");
         exit();
       }
     }

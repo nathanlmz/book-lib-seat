@@ -5,6 +5,7 @@
         header("Location: ../index.php");
         exit();
     }
+    // Get the sid from SESSION
      $gsid = $_SESSION['sid'];
 ?>
 
@@ -35,16 +36,20 @@
     </p>
     <img src="cclib_1F.png" class="center" style="max-height:460px;">
     <?php
+        // Show the following buttons.
         echo '<form method="post">
             <button name="area_a">Seat area A</button>
             <button name="return">Return to previous page</button>
         </form>';
         if (isset($_POST['area_a'])) {
+            // If the button "Seat area A" is pressed, get the library id of cclib into SESSION.
             $_SESSION['lib'] = "cclib";
+            // Redirect to bookulib.php, pass area=A to the url
             header("Location: ../ulib/bookulib.php?area=A");
             exit();
         }
         else if(isset($_POST['return'])){
+            // If "Return to previous page" button is clicked, redirect to ulib.php with the library id
             header("Location: ../ulib.php?cclib=");
             exit();
         }

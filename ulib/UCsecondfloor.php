@@ -5,6 +5,7 @@
         header("Location: ../index.php");
         exit();
     }
+     // Get the sid from SESSION 
      $gsid = $_SESSION['sid'];
 ?>
 
@@ -35,6 +36,7 @@
     </p>
     <img src="uclib_2F.png" class="center">
     <?php
+     // Show the buttons
         echo '<form method="post">
             <button name="area_a">Seat area A</button>
             <button name="area_b">Seat area B</button>
@@ -42,21 +44,28 @@
             <button name="return">Return to previous page</button>
         </form>';
         if (isset($_POST['area_a'])) {
+            // If the button "Seat area A" is pressed, pass the library id "uclib" into SESSION['lib']
             $_SESSION['lib'] = "uclib";
+            // Redirect to bookulib.php with area id 'A'
             header("Location: ../ulib/bookulib.php?area=A");
             exit();
         }
         if (isset($_POST['area_b'])) {
+            // If the button "Seat area B" is pressed, pass the library id "uclib" into SESSION['lib']
             $_SESSION['lib'] = "uclib";
+            // Redirect to bookulib.php with area id 'B'
             header("Location: ../ulib/bookulib.php?area=B");
             exit();
         }
         if (isset($_POST['area_c'])) {
+            // If the button "Seat area C" is pressed, pass the library id "uclib" into SESSION['lib']
             $_SESSION['lib'] = "uclib";
+            // Redirect to bookulib.php with area id 'C'
             header("Location: ../ulib/bookulib.php?area=C");
             exit();
         }
         else if(isset($_POST['return'])){
+            // If button "Return to previous page" is clicked, redirect to ulib.php
             header("Location: ../ulib.php?uclib=");
             exit();
         }

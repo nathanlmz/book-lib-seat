@@ -129,27 +129,35 @@
     <header><h1 class="title">Book Lib Seat</h1></header>
    
     <?php
+        // Here, we check whether the url contains "error" or not   
         if(isset($_GET['error'])){
+            // If there exist error, we can get the 'error' code into the value $errorCheck for our convenience.
             $errorCheck = $_GET['error'];
             if($errorCheck == "empty"){
+                // If there is empty input, we print an error message to notify the user to fill in all the fields
                 echo '<h1 style="font-size:28px;color:red;text-align:center;font-family:arial;">Please fill in all the fields!</h1>';
             }
             else if($errorCheck == "wrongpwd"){
+                // If the password is wrong, we print an error message to notify him/her
                 echo '<h1 style="font-size:28px;color:red;text-align:center;font-family:arial;">The password is incorrect!</h1>';
             }
             else if($errorCheck == "siderror"){
+                // If the sid does not exist in account database, we we print an error message to notify him/her
                 echo '<h1 style="font-size:28px;color:red;text-align:center;font-family:arial;">Student/staff id invalid!</h1>';
             }
             else{
+                // If the book id is invalid, we print an error message to notify him/her
                 echo '<h1 style="font-size:28px;color:red;text-align:center;font-family:arial;">Book ID invalid!</h1>';
             }
         }
         echo '<p class="chooselib">
             My booking record
             </p>';
-         $gsid = $_SESSION['sid'];
+         $gsid = $_SESSION['sid'];  //Get the user's sid from SESSION
+         // Select the booking records from databse.
          $selsql = "SELECT bookid, bookdate, starttime, endtime, lib, area, seatid FROM bookrecord WHERE sid=? AND bookdate>=CURRENT_DATE() ORDER BY bookdate ASC";
          $stmt = mysqli_stmt_init($conn);
+         // We use prepared statement to access and get data from database.
          if(mysqli_stmt_prepare($stmt, $selsql)){
             mysqli_stmt_bind_param($stmt, "s", $gsid);
             mysqli_stmt_execute($stmt);
@@ -157,6 +165,7 @@
         } 
          mysqli_stmt_close($stmt);
          if(!mysqli_num_rows($result)) {
+             // If there is no book record found for this sid, we notify the user that he/she haven't booked any seat.
              echo "<p align='center' style='color:red;font-size:22px;font-family:arial;font-weight:bold;'>
              You haven't booked any seat<br>";
          }
@@ -175,6 +184,7 @@
              </tr>'; 
              while($row = mysqli_fetch_assoc($result)) {
                 // $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$row['area']."'";
+                // In here, we also get the floor of each book area, from the areainfo table. and then show it to user.
                 $getfloorsql = "SELECT `floor` FROM `areainfo` WHERE `area`='".$row['area']."' AND `lib`='".$row['lib']."'";
                 $getfloorresult = mysqli_query($conn, $getfloorsql);
                 $getfloorrow = mysqli_fetch_array($getfloorresult);
@@ -182,6 +192,7 @@
                  echo "<tr>";
                  $library=$row['lib'];
                  echo "<td>".$row['bookid']."</td>";
+                 // Here, we conver the library id to the full name of the libraries.
                  if($library=="ulib"){
                      echo "<td>University Library</td>";
                  }
@@ -194,6 +205,7 @@
                  else{
                     echo "<td>".$row['lib']."</td>";
                  }
+                 // We print the floor, area, seat id, book date, start time, end time to the table.
                  echo "<td>".$getfloorrow['floor']."/F</td>
                  <td>".$row['area']."</td>
                  <td>".$row['seatid']."</td>
@@ -203,12 +215,14 @@
              </tr>";
              }
              echo "</table><br>";
-         
+             // We add a field to allow the user to input the book id that he/she wants to cancel
             echo '<form action="" method="POST">';
             echo '<p align="center" class="ques">Please insert the <font color="red">book ID</font> that you want to cancel</p>
             <input type="text" id="delbook" name="delbook" style="width:400px;"><br>';
+            // We add a login filed to let the user to login again, so as to confirm the booking.
             echo '<p align="center" style="font-size:20px;" class="ques">Please login again to confirm.</p><br>';
                     if(isset($_SESSION['sid'])){
+        // If the sid already exist in SESSION, it will be inputted into the sid field automatically, so that the user can just input the password.
                         $psid = $_SESSION['sid'];
                         echo '<input type="text" name="sid" placeholder="Student/Staff ID" style="width:400px;" value="'.$psid.'"><br>';
                     }
@@ -220,15 +234,18 @@
                 <button type="submit" name="login-submit">Confirm</button>
             </form>';
         }
+        // Here, we provide a button for the user to check the floor plan of library. We also provide a button for the user to return homepage
         echo '<form method="post">
                 <button name="floorplan">View Library Floorplan</button>
                 <button name="home">Return to homepage</button>
             </form>';
         if(isset($_POST['home'])){
+            // If the button "Return to homepage" is clicked, it returns to the home page.
             header("Location: ../bls/home.php");
             exit();
         }
         else if(isset($_POST['floorplan'])){
+            // If the button "View Library Floorplan" is clicked, it jumps to the "floorplan.php" page.
             header("Location: ../bls/floorplan.php");
             exit();
         }

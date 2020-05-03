@@ -20,10 +20,12 @@
         <br>
         <form action="includes/booklibseatlogin.php" method="POST">
             <?php
+            // If a 'sid' presence in the url, we can pass the 'sid' into the 'sid' field, so that the user can just input the password for login.
                 if(isset($_GET['sid'])){
                     $first = $_GET['sid'];
                     echo '<input type="text" name="sid" placeholder="Student/Staff ID  eg. s1155xxxxxx" value="'.$first.'"><br>';
                 }
+            // If a 'sid' is not present in the url, we also show the 'sid' field for the user to login
                 else{
                     echo '<input type="text" name="sid" placeholder="Student/Staff ID  eg. s1155xxxxxx"><br>';
                 }
@@ -34,11 +36,12 @@
         </form>
 
         <?php
-        //    Check password correct or not, and give relevant message
+        //    Check 'error' contains in the url or not, if yes, give relevant message
             if(!isset($_GET['error'])){
                 exit();
             }
             else{
+                // We get the error id into $errorCheck for furthur use
                 $errorCheck = $_GET['error'];
 
                 if($errorCheck == "emptyfields"){
@@ -53,7 +56,7 @@
                     echo "<p class='error'>The password is incorrect!</p>";
                     exit();
                 }
-                elseif($errorCheck == "wronguidpwd"){
+                elseif($errorCheck == "sidinvalid"){
                     echo "<p class='error'>Student/staff id invalid!</p>";
                     exit();
                 }
