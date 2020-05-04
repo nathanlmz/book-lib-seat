@@ -1,7 +1,7 @@
 <?php
 session_start();
 if(isset($_POST['return'])){
-  header("Location: ../home.php");
+  header("Location: ../admin_home.php");
 }
 else if (isset($_POST['signup-submit'])) {
 
