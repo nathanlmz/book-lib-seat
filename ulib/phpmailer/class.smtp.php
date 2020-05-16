@@ -1,5 +1,5 @@
 <?php
-// This file is an open external source file for our project, which is needed for sending configuration email.
+// This file is an open external source file used in our project, which is necessary for sending configuration email to the users.
 // The license, author, original link and the copyright of the source code are listed below
 /**
  * PHPMailer RFC821 SMTP email transport class.
