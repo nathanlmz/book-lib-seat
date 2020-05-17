@@ -1,3 +1,7 @@
+-- This is the database file for Book Lib Seat
+-- This database file can be imported using phpmyadmin
+
+
 -- phpMyAdmin SQL Dump
 -- version 5.0.1
 -- https://www.phpmyadmin.net/
