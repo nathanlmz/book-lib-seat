@@ -1,5 +1,5 @@
 <?php
-// This file is an open external source file for our project, which is needed for sending configuration email.
+// This file is an open external source file used in our project, which is needed for sending configuration email.
 // The license, author, original link and the copyright of the source code are listed below
 /**
  * PHPMailer SPL autoloader.
